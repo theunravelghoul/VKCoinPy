@@ -10,7 +10,7 @@ https://www.python.org/downloads/
 После того, как Python установлен, необходимо установить зависимости. 
 
 
-# Windows
+## Windows
 Запустить `install.bat`.
 
 ## Linux
