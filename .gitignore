@@ -1,0 +1,12 @@
+# Code editors
+.vscode/
+
+
+# Python virtual env
+.venv/
+
+# Pycache
+__pycache__/
+
+# User-related configs
+vk_config*.json
