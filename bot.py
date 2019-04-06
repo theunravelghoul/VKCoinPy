@@ -121,10 +121,7 @@ class VKCoinBot(object):
         first_time = message.get('firstTime')
         m_pow = message.get('pow').replace(
             "window.location.host", "window.location")
-        JSCodeExecutor.prepare_context(self.server_url)
-        executed_pow = JSCodeExecutor.exec(m_pow)
-
-        response_message = f"C1 {random_id} {executed_pow}"
+        response_message = f"C1 {random_id}"
         await self.connection.send(response_message)
         self.messages_sent = 2
         self._start_sender()

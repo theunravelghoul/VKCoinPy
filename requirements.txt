@@ -1,5 +1,4 @@
 aioconsole==0.1.14
-py-mini-racer==0.1.18
 urllib3==1.24.1
 vk-api==11.4.0
 websockets==7.0
