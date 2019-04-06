@@ -5,8 +5,6 @@ import logging
 import vk_api
 import websockets
 
-from helpers import JSCodeExecutor
-
 
 class ResponseMessageTypes(object):
     INIT = 'INIT'
@@ -47,7 +45,8 @@ class VKCoinBot(object):
 
         self.config = config
 
-        self.get_place_message_interval = self.config.getint('CURRENT_PLACE_MESSAGE_INTERVAL', 10)
+        self.get_place_message_interval = self.config.getint(
+            'CURRENT_PLACE_MESSAGE_INTERVAL', 10)
 
         self.connected = False
         self.messages_sent = 0
