@@ -131,11 +131,14 @@ class VKCoinBot(object):
         self.tick = 0
         self.random_id = None
 
+        self.items = dict()
+
     def report_player_score(self):
         score = round(int(self.score) / 1000, 3)
         speed = round(int(self.tick) / 1000, 2)
         self.logger.info(
             f'Coins: {score} | Speed: {speed} / tick | Place: {self.place}')
+        self.logger.info(' | '.join([f"{key}: {value}" for (key, value) in self.items.items()]))
 
     async def _connect(self) -> None:
         self.connection = await websockets.connect(self.server_url)
@@ -221,8 +224,15 @@ class VKCoinBot(object):
             return
 
         message_type = message.get('type')
-        if message_type == ResponseMessageTypes.INIT:
-            await self._process_init_message(message)
+        if message_type:
+            if message_type == ResponseMessageTypes.INIT:
+                await self._process_init_message(message)
+        else:
+            # Item buy message
+            self.logger.info(f"Bought an item")
+            self.tick = message.get('tick', self.tick)
+            self.score = message.get('score', self.score)
+            self._update_items(message.get('items'))
 
     async def _process_broken_message(self) -> None:
         self.logger.info(
@@ -250,11 +260,20 @@ class VKCoinBot(object):
                 asyncio.get_running_loop().create_task(self._enqueue_buy_messages())
             self.messages_enqueued = True
 
+    def _update_items(self, items: dict) -> None:
+        self.items = dict()
+        for item in items:
+            item_name = item.upper()
+            if hasattr(Items, item_name):
+                self.items[item_name] = self.items[item_name] + \
+                    1 if item_name in self.items.keys() else 0
+
     async def _process_init_message(self, message: str) -> None:
         self.score = message.get('score')
         self.place = message.get('place')
         self.random_id = message.get('randomId')
-        self.items = message.get('items')
+        items = message.get('items')
+        self._update_items(items)
         self.top = message.get('top')
         self.tick = message.get('tick')
         ccp = message.get('ccp')
