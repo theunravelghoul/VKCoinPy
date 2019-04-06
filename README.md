@@ -9,10 +9,15 @@ https://www.python.org/downloads/
 
 После того, как Python установлен, необходимо установить зависимости. 
 
-Для этого нужно выполнить в командрой строке или терминале следующую команду: 
 
-```
-pip install -r requirements.txt
+# Windows
+Запустить `install.bat`.
+
+## Linux
+Команда в терминале:
+
+```bash
+pip install -r requirements/base.txt
 ```
 
 # Настройка
@@ -27,6 +32,10 @@ VK_TOKEN = токен
 # Запуск
 Запуск бота осуществляется следующей командой из терминала или командной строки: 
 
+## Windows
+Запустить `start.bat`. 
+
+## Linux
 ```
 python manager.py
 ```
