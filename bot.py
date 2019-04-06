@@ -54,7 +54,6 @@ class RequestMessageGenerator(object):
 
     @staticmethod
     def generate_pack(*args, **kwargs):
-        import pdb; pdb.set_trace()
         messages_sent = kwargs['messages_sent']
         pack = f"P{messages_sent} {' '.join(args)}"
         return pack
@@ -186,7 +185,6 @@ class VKCoinBot(object):
                         RequestMessageTypes.BUY_ITEM, item_id=getattr(
                             Items, item), messages_sent=self.messages_sent
                     ))
-                    import pdb;pdb.set_trace()
                     self.logger.info(f'Trying to buy {item}')
 
             await asyncio.sleep(self.autobuy_interval)
