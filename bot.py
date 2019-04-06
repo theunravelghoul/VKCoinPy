@@ -301,7 +301,6 @@ class VKCoinBot(object):
         if self.restart:
             return
         await self._disconnect()
-        self.logger.info(f"Reconnecting in {self.reconnect_timeout}")
         await asyncio.sleep(self.reconnect_timeout)
         self.restart = True
         if cleanup:
