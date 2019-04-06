@@ -1,7 +1,7 @@
 import logging
 import logging.config
 import os
-
+import js2py
 
 def setup_logging():
     pass
@@ -9,6 +9,11 @@ def setup_logging():
 
 def get_pass(e, t):
     return e + t - 15 if e % 2 == 0 else e + t - 109
+
+
+def calculate_pow(p: str) -> int:
+    result = js2py.eval_js(p)
+    return result
 
 
 def prepare_logs_dir() -> str:
@@ -19,7 +24,7 @@ def prepare_logs_dir() -> str:
     return logs_dir_path
 
 
-def get_log_file_name(logs_dir_path:str) -> str:
+def get_log_file_name(logs_dir_path: str) -> str:
     return os.path.join(logs_dir_path, f'{len(os.listdir(logs_dir_path))}.txt')
 
 
