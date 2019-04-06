@@ -3,6 +3,13 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 
 [![Группа ВКонтакте](https://img.shields.io/badge/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20VK-VKCoinPy-green.svg)](https://vk.com/vkcoinpy)
 
+# RoadMap
+- [X] Цвета
+- [X] Переводы
+- [X] Доделать автозакупку предметов.
+- [ ] Одновременный майнинг с нескольких аккаунтов
+- [ ] Русский язык
+
 # Требования
 Для запуска бота необходимо установить Python 3.7.
 
@@ -39,7 +46,8 @@ chmod +x start.sh
 
 
 # Настройка
-Для работы бота нужен токен ВК. О том, как его получить, можно почитать [здесь](https://github.com/cursedseal/VCoinX#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B0)
+Для работы бота нужен токен ВК. 
+Для получения токена, перейдите по ссылке, нажмите "Разрешить" и скопируйте часть адресной строки после access_token= и до &expires_in.
 
 Токен нужно вставить в config.ini:
 
@@ -64,10 +72,3 @@ VK_TOKEN = токен
 
 
 > `AUTOBUY_ITEMS` перечисляются через запятую, может быть `CURSOR`, `CPU`, `CPU_STACK`, `COMPUTER`, `SERVER_VK`, `QUANTUM_PC`, `DATACENTER`. 
-
-
-# RoadMap
-- [X] Цвета
-- [ ] Русский язык
-- [X] Переводы
-- [X] Доделать автозакупку предметов.
