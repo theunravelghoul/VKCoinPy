@@ -1,6 +1,8 @@
 # VKCoinPy
 A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All the further description is in Russian.
 
+[![Группа ВКонтакте](https://img.shields.io/badge/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20VK-VKCoinPy-green.svg)](https://vk.com/vkcoinpy)
+
 # Требования
 Для запуска бота необходимо установить Python 3.7.
 
