@@ -8,7 +8,7 @@ def setup_logging():
 
 
 def get_pass(e, t):
-    return e + t - 15 if e % 2 == 0 else e + t - 109
+    return e - 1
 
 
 def calculate_pow(p: str) -> int:

@@ -224,7 +224,6 @@ class VKCoinBot(object):
 
     async def _process_broken_message(self) -> None:
         self.logger.info(f"Servers are down, reconnecting in {self.reconnect_timeout} seconds")
-        await asyncio.sleep(self.reconnect_timeout)
         await self._reconnect()
 
     def _process_place_message(self, message: str) -> None:
@@ -299,7 +298,11 @@ class VKCoinBot(object):
         self.logger.debug("Listener stopped")
 
     async def _reconnect(self, cleanup=True) -> None:
+        if self.restart:
+            return
         await self._disconnect()
+        self.logger.info(f"Reconnecting in {self.reconnect_timeout}")
+        await asyncio.sleep(self.reconnect_timeout)
         self.restart = True
         if cleanup:
             self.messages_sent = 1
@@ -310,6 +313,7 @@ class VKCoinBot(object):
         await self._connect()
         self.restart = False
         self._start_listener()
+        
 
     def _start_listener(self) -> None:
         asyncio.get_running_loop().create_task(self._listen())
