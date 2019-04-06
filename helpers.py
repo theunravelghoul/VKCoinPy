@@ -25,7 +25,7 @@ def prepare_logs_dir() -> str:
 
 
 def get_log_file_name(logs_dir_path: str) -> str:
-    return os.path.join(logs_dir_path, f'{len(os.listdir(logs_dir_path))}.txt')
+    return os.path.join(logs_dir_path, '{}.txt'.format(len(os.listdir(logs_dir_path))))
 
 
 def setup_logging(bot_config: dict) -> None:
