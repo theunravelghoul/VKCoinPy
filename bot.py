@@ -3,6 +3,7 @@ import json
 import logging
 import random
 from typing import Union
+from queue import Queue
 
 import vk_api
 import websockets
@@ -94,8 +95,10 @@ class VKCoinBot(object):
         self.current_place_message_interval = self.config.getint(
             'CURRENT_PLACE_MESSAGE_INTERVAL', 10)
         self.reconnect_timeout = self.config.getint('RECONNECT_TIMEOUT', 10)
-        self.enqueue_message_timeout = self.config.getint('ENQUEUE_MESSAGE_TIMEOUT', 1)
-        self.init_connection_retry_interval = self.config.getint('INIT_CONNECTION_RETRY_INTERVAL', 1)
+        self.enqueue_message_timeout = self.config.getint(
+            'ENQUEUE_MESSAGE_TIMEOUT', 1)
+        self.init_connection_retry_interval = self.config.getint(
+            'INIT_CONNECTION_RETRY_INTERVAL', 1)
 
         # Auto buy settings
         self.autobuy_enabled = self.config.getboolean('AUTOBUY_ENABLED', False)
@@ -115,7 +118,7 @@ class VKCoinBot(object):
 
         self.connected = False
         self.messages_sent = 1
-        self.message_queue = []
+        self.message_queue = Queue()
         self.messages_enqueued = False
         self.missed_messages = 0
         self.successful_messages = 0
@@ -153,9 +156,9 @@ class VKCoinBot(object):
 
     async def _send_enqueued_messages(self) -> None:
         while not self.restart:
-            if len(self.message_queue):
+            if not self.message_queue.empty():
                 self.logger.debug("Sending enqueued messages...")
-                message = self.message_queue.pop()
+                message = self.message_queue.get()
                 await self._send_message(message)
             else:
                 self.logger.debug("No messages in the queue yet")
@@ -181,10 +184,11 @@ class VKCoinBot(object):
 
             for item in items:
                 if hasattr(Items, item):
-                    self._enqueue_message(RequestMessageGenerator.generate(
+                    message = RequestMessageGenerator.generate(
                         RequestMessageTypes.BUY_ITEM, item_id=getattr(
                             Items, item), messages_sent=self.messages_sent
-                    ))
+                    )
+                    self._enqueue_message(message)
                     self.logger.info(f'Trying to buy {item}')
 
             await asyncio.sleep(self.autobuy_interval)
@@ -193,7 +197,7 @@ class VKCoinBot(object):
         pass
 
     def _enqueue_message(self, message: str) -> None:
-        self.message_queue.append(message)
+        self.message_queue.put(message)
 
     async def _process_message(self, message_string: str) -> None:
         try:
@@ -221,7 +225,8 @@ class VKCoinBot(object):
             await self._process_init_message(message)
 
     async def _process_broken_message(self) -> None:
-        self.logger.info(f"Servers are down, reconnecting in {self.reconnect_timeout} seconds")
+        self.logger.info(
+            f"Servers are down, reconnecting in {self.reconnect_timeout} seconds")
         await self._reconnect()
 
     def _process_place_message(self, message: str) -> None:
@@ -291,7 +296,7 @@ class VKCoinBot(object):
                 await asyncio.sleep(self.init_connection_retry_interval)
                 await self._reconnect()
             except Exception:
-                self.logger.debug()
+                self.logger.exception()
                 self.logger.debug("Listener stopped")
         self.logger.debug("Listener stopped")
 
@@ -299,18 +304,16 @@ class VKCoinBot(object):
         if self.restart:
             return
         await self._disconnect()
-        await asyncio.sleep(self.reconnect_timeout)
         self.restart = True
         if cleanup:
             self.messages_sent = 1
             self.missed_messages = 0
             self.successful_messages = 0
             self.tick_response_received = True
-            self.message_queue.clear()
+            self.message_queue = Queue()
         await self._connect()
         self.restart = False
         self._start_listener()
-        
 
     def _start_listener(self) -> None:
         asyncio.get_running_loop().create_task(self._listen())
