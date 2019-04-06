@@ -16,11 +16,23 @@ class RequestMessageTypes(object):
     BUY_ITEM = "B"
 
 
+class Items(object):
+    CURSOR = "cursor"
+    CPU = "cpu"
+    CPU_STACK = "CPU_STACK"
+    COMPUTER = "COMPUTER"
+    SERVER_VK = "SERVER_VK"
+    QUANTUM_PC = "QUANTUM_PC"
+    DATACENTER = "DATACENTER"
+
+
 class RequestMessageGenerator(object):
     @staticmethod
     def generate(message_type, *args, **kwargs):
         if message_type == RequestMessageTypes.GET_PLACE:
             return RequestMessageGenerator._generate_get_place_message(*args, **kwargs)
+        if message_type == RequestMessageTypes.BUY_ITEM:
+            return RequestMessageGenerator._generate_buy_item_message(*args, **kwargs)
 
         return None
 
@@ -47,6 +59,9 @@ class VKCoinBot(object):
 
         self.get_place_message_interval = self.config.getint(
             'CURRENT_PLACE_MESSAGE_INTERVAL', 10)
+        self.autobuy_enabled = self.config.getboolean('AUTOBUY_ENABLED', False)
+        self.autobuy_interval = self.config.getint('AUTOBUY_INTERVAL', 10)
+        self.autobuy_items = self.config.get("AUTOBUY_ITEMS", None)
 
         self.connected = False
         self.messages_sent = 0
@@ -87,6 +102,19 @@ class VKCoinBot(object):
             self._enqueue_message(RequestMessageGenerator.generate(
                 RequestMessageTypes.GET_SCORE))
             await asyncio.sleep(10)
+
+    async def _enqueue_buy_messages(self):
+        while True:
+            items = self.autobuy_items.split(",")
+
+            for item in items:
+                if hasattr(Items, item):
+                    self._enqueue_message(RequestMessageGenerator.generate(
+                        RequestMessageTypes.BUY_ITEM, item_id=getattr(
+                            Items, item)
+                    ))
+
+            await asyncio.sleep(self.autobuy_interval)
 
     def _enqueue_message(self, message: str):
         self.message_queue.append(message)
@@ -150,6 +178,9 @@ class VKCoinBot(object):
         asyncio.get_running_loop().create_task(self._enqueue_tick_messages())
         asyncio.get_running_loop().create_task(self._enqueue_score_messages())
         asyncio.get_running_loop().create_task(self._send_enqueued_messages())
+
+        if self.autobuy_enabled and self.autobuy_items:
+            asyncio.get_running_loop().create_task(self._enqueue_buy_messages())
 
     async def run(self):
         self.logger.info(f"Connecting to {self.server_url}")
