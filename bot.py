@@ -15,6 +15,7 @@ class ResponseMessageTypes(object):
     NOT_ENOUGH_COINS = 'NOT_ENOUGH_COINS'
     SELF_DATA = 'SELF_DATA'
     MISS = 'MISS'
+    BROKEN = 'BROKEN'
 
 
 class RequestMessageTypes(object):
@@ -22,6 +23,7 @@ class RequestMessageTypes(object):
     GET_SCORE = "GU"
     BUY_ITEM = "B"
     TICK = "TICK"
+    TRANSFER = "T"
 
 
 class Items(object):
@@ -38,34 +40,46 @@ class RequestMessageGenerator(object):
     @staticmethod
     def generate(message_type, *args, **kwargs) -> Union[str, None]:
         if message_type == RequestMessageTypes.GET_PLACE:
-            return RequestMessageGenerator._generate_get_place_message(*args, **kwargs)
+            return RequestMessageGenerator.generate_get_place_message(*args, **kwargs)
         if message_type == RequestMessageTypes.BUY_ITEM:
-            return RequestMessageGenerator._generate_buy_item_message(*args, **kwargs)
+            return RequestMessageGenerator.generate_buy_item_message(*args, **kwargs)
         if message_type == RequestMessageTypes.GET_SCORE:
-            return RequestMessageGenerator._generate_get_score_message(*args, **kwargs)
+            return RequestMessageGenerator.generate_get_score_message(*args, **kwargs)
         if message_type == RequestMessageTypes.TICK:
-            return RequestMessageGenerator._generate_tick_message(*args, **kwargs)
+            return RequestMessageGenerator.generate_tick_message(*args, **kwargs)
+        if message_type == RequestMessageTypes.TRANSFER:
+            return RequestMessageGenerator.generate_transfer_message(*args, **kwargs)
 
         return None
 
     @staticmethod
-    def _generate_get_place_message(*args, **kwargs) -> str:
+    def generate_pack(*args, **kwargs):
+        import pdb; pdb.set_trace()
         messages_sent = kwargs['messages_sent']
+        pack = f"P{messages_sent} {' '.join(args)}"
+        return pack
+
+    @staticmethod
+    def generate_get_place_message(*args, **kwargs) -> str:
         return f"{RequestMessageTypes.GET_PLACE}"
 
     @staticmethod
-    def _generate_get_score_message(*args, **kwargs) -> str:
-        messages_sent = kwargs['messages_sent']
+    def generate_get_score_message(*args, **kwargs) -> str:
         return f"{RequestMessageTypes.GET_SCORE}"
 
     @staticmethod
-    def _generate_buy_item_message(*args, **kwargs) -> str:
+    def generate_buy_item_message(*args, **kwargs) -> str:
         item_id = kwargs['item_id']
-        messages_sent = kwargs['messages_sent']
-        return f"P{messages_sent} {RequestMessageTypes.BUY_ITEM} {item_id}"
+        return RequestMessageGenerator.generate_pack(RequestMessageTypes.BUY_ITEM, item_id, **kwargs)
 
     @staticmethod
-    def _generate_tick_message(*args, **kwargs) -> str:
+    def generate_transfer_message(*args, **kwargs):
+        amount = kwargs['amount']
+        user_id = kwargs['user_id']
+        return RequestMessageGenerator.generate_pack(RequestMessageTypes.TRANSFER, user_id, amount, **kwargs)
+
+    @staticmethod
+    def generate_tick_message(*args, **kwargs) -> str:
         random_id = kwargs['random_id']
         messages_sent = kwargs['messages_sent']
         return f"C{messages_sent} {random_id} 1"
@@ -78,13 +92,27 @@ class VKCoinBot(object):
 
         self.config = config
 
-        self.get_place_message_interval = self.config.getint(
+        self.current_place_message_interval = self.config.getint(
             'CURRENT_PLACE_MESSAGE_INTERVAL', 10)
+        self.reconnect_timeout = self.config.getint('RECONNECT_TIMEOUT', 10)
+        self.enqueue_message_timeout = self.config.getint('ENQUEUE_MESSAGE_TIMEOUT', 1)
+        self.init_connection_retry_interval = self.config.getint('INIT_CONNECTION_RETRY_INTERVAL', 1)
+
+        # Auto buy settings
         self.autobuy_enabled = self.config.getboolean('AUTOBUY_ENABLED', False)
         self.autobuy_interval = self.config.getint('AUTOBUY_INTERVAL', 10)
         self.autobuy_items = self.config.get("AUTOBUY_ITEMS", None)
         self.missed_messages_limit = self.config.getint(
             "MISSED_MESSAGES_LIMIT", 10)
+
+        # Auto transfer settings
+        self.auto_transfer_enabled = self.config.getboolean(
+            'AUTO_TRANSFER', False)
+        self.auto_transfer_to = self.config.getint('AUTO_TRANSFER_TO', 0)
+        self.auto_transfer_limit = self.config.getint('AUTO_TRANSFER_LIMIT', 0)
+        self.auto_transfer_when = self.config.getint('AUTO_TRANSFER_WHEN', 0)
+        self.auto_transfer_percent = self.config.getint(
+            'AUTO_TRANSFER_PERCENT', 0)
 
         self.connected = False
         self.messages_sent = 1
@@ -132,7 +160,7 @@ class VKCoinBot(object):
                 await self._send_message(message)
             else:
                 self.logger.debug("No messages in the queue yet")
-            await asyncio.sleep(1)
+            await asyncio.sleep(self.enqueue_message_timeout)
 
     async def _enqueue_tick_messages(self) -> None:
         while not self.restart:
@@ -140,13 +168,13 @@ class VKCoinBot(object):
                 self._enqueue_message(RequestMessageGenerator.generate(
                     RequestMessageTypes.TICK, random_id=self.random_id, messages_sent=self.messages_sent))
                 tick_response_received = False
-            await asyncio.sleep(1)
+            await asyncio.sleep(self.enqueue_message_timeout)
 
     async def _enqueue_score_messages(self) -> None:
         while not self.restart:
             self._enqueue_message(RequestMessageGenerator.generate(
                 RequestMessageTypes.GET_SCORE, messages_sent=self.messages_sent))
-            await asyncio.sleep(10)
+            await asyncio.sleep(self.current_place_message_interval)
 
     async def _enqueue_buy_messages(self) -> None:
         while not self.restart:
@@ -158,9 +186,13 @@ class VKCoinBot(object):
                         RequestMessageTypes.BUY_ITEM, item_id=getattr(
                             Items, item), messages_sent=self.messages_sent
                     ))
+                    import pdb;pdb.set_trace()
                     self.logger.info(f'Trying to buy {item}')
 
             await asyncio.sleep(self.autobuy_interval)
+
+    def transfer_coins(self, user_id: int = None, amount: int = 0) -> None:
+        pass
 
     def _enqueue_message(self, message: str) -> None:
         self.message_queue.append(message)
@@ -172,6 +204,8 @@ class VKCoinBot(object):
             self.logger.debug(f"Received message: {message_string}")
             if message_string[0] == 'C':
                 self._process_place_message(message_string)
+            if ResponseMessageTypes.BROKEN in message_string:
+                await self._process_broken_message()
             if ResponseMessageTypes.SELF_DATA in message_string:
                 self._process_self_data_message(message_string)
             if ResponseMessageTypes.NOT_ENOUGH_COINS in message_string:
@@ -187,6 +221,11 @@ class VKCoinBot(object):
         message_type = message.get('type')
         if message_type == ResponseMessageTypes.INIT:
             await self._process_init_message(message)
+
+    async def _process_broken_message(self) -> None:
+        self.logger.info(f"Servers are down, reconnecting in {self.reconnect_timeout} seconds")
+        await asyncio.sleep(self.reconnect_timeout)
+        await self._reconnect()
 
     def _process_place_message(self, message: str) -> None:
         place = message.split(' ')[-1]
@@ -225,7 +264,7 @@ class VKCoinBot(object):
             await self._send_message(init_message_response)
         except Exception:
             self.logger.debug("Can not load the player, retrying...")
-            await asyncio.sleep(2)
+            await asyncio.sleep(self.init_connection_retry_interval)
             await self._reconnect(cleanup=True)
             return
 
@@ -252,7 +291,7 @@ class VKCoinBot(object):
                     asyncio.get_running_loop().stop()
                     return
                 self.logger.debug("Listener stopped")
-                await asyncio.sleep(1)
+                await asyncio.sleep(self.init_connection_retry_interval)
                 await self._reconnect()
             except Exception:
                 self.logger.debug()
