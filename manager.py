@@ -47,7 +47,7 @@ class VKCoinBotManager(object):
             'apps.get', {'app_id': self.VK_COIN_APP_ID}).get('items')[0]
         mobile_iframe_url = app_data.get('mobile_iframe_url', None)
         if mobile_iframe_url is None:
-            raise ValueError("Mobile App Iframe URL is empty")
+            raise ValueError("Mobile Iframe URL is empty")
         return mobile_iframe_url
 
     def _get_channel(self):

@@ -2,8 +2,8 @@ import asyncio
 import json
 import logging
 import random
-from typing import Union
 from queue import Queue
+from typing import Union
 
 import vk_api
 import websockets
@@ -56,7 +56,7 @@ class RequestMessageGenerator(object):
     @staticmethod
     def generate_pack(*args, **kwargs):
         messages_sent = kwargs['messages_sent']
-        pack = f"P{messages_sent} {' '.join(args)}"
+        pack = f"P{messages_sent} {' '.join([str(arg) for arg in args])}"
         return pack
 
     @staticmethod
@@ -111,7 +111,6 @@ class VKCoinBot(object):
         self.auto_transfer_enabled = self.config.getboolean(
             'AUTO_TRANSFER', False)
         self.auto_transfer_to = self.config.getint('AUTO_TRANSFER_TO', 0)
-        self.auto_transfer_limit = self.config.getint('AUTO_TRANSFER_LIMIT', 0)
         self.auto_transfer_when = self.config.getint('AUTO_TRANSFER_WHEN', 0)
         self.auto_transfer_percent = self.config.getint(
             'AUTO_TRANSFER_PERCENT', 0)
@@ -138,7 +137,8 @@ class VKCoinBot(object):
         speed = round(int(self.tick) / 1000, 2)
         self.logger.info(
             f'Coins: {score} | Speed: {speed} / tick | Place: {self.place}')
-        self.logger.info(' | '.join([f"{key}: {value}" for (key, value) in self.items.items()]))
+        self.logger.info(' | '.join(
+            [f"{key}: {value}" for (key, value) in self.items.items()]))
 
     async def _connect(self) -> None:
         self.connection = await websockets.connect(self.server_url)
@@ -196,8 +196,11 @@ class VKCoinBot(object):
 
             await asyncio.sleep(self.autobuy_interval)
 
-    def transfer_coins(self, user_id: int = None, amount: int = 0) -> None:
-        pass
+    def transfer_coins(self, user_id: int, amount: int) -> None:
+        message = RequestMessageGenerator.generate_transfer_message(
+            user_id=user_id, amount=amount, messages_sent=self.messages_sent)
+        self._enqueue_message(message)
+        self.logger.info(f"Sending {amount} coins to user {user_id}")
 
     def _enqueue_message(self, message: str) -> None:
         self.message_queue.put(message)
@@ -259,6 +262,16 @@ class VKCoinBot(object):
             if self.autobuy_enabled and self.autobuy_items:
                 asyncio.get_running_loop().create_task(self._enqueue_buy_messages())
             self.messages_enqueued = True
+
+        self._autotransfer()
+
+    def _autotransfer(self) -> None:
+        if not self.auto_transfer_enabled:
+            return
+
+        if int(self.score) / 1000 > self.auto_transfer_when:
+            self.transfer_coins(self.auto_transfer_to, round(
+                int(self.score) * (self.auto_transfer_percent / 100)))
 
     def _update_items(self, items: dict) -> None:
         self.items = dict()

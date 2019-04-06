@@ -56,7 +56,12 @@ VK_TOKEN = токен
 | AUTOBUY_INTERVAL      | Интервал автозакупки в секундах                  |
 | AUTOBUY_ITEMS         | Предметы для автозакупки                         |
 | MISSED_MESSAGES_LIMIT | Лимит ошибок до переподключения                  |
+| AUTO_TRANSFER         | Автоперевод (True - включен, False - выключен)   |
+| AUTO_TRANSFER_TO      | ID пользователя для автоперевода                 |
+| AUTO_TRANSFER_WHEN    | По достижению какой суммы выполнять перевод      |
+| AUTO_TRANSFER_PERCENT | Сколько процентов баланса переводить             |
 | LOG_LEVEL             | Уровень логов                                    |
+
 
 > `AUTOBUY_ITEMS` перечисляются через запятую, может быть `CURSOR`, `CPU`, `CPU_STACK`, `COMPUTER`, `SERVER_VK`, `QUANTUM_PC`, `DATACENTER`. 
 
