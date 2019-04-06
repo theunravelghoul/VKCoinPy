@@ -11,3 +11,6 @@ __pycache__/
 # User-related configs
 vk_config*.json
 config.ini
+
+# Logs
+logs/

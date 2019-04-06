@@ -1,5 +1,5 @@
 @echo off
 title VKCoinPy
-python manager.py
+python vkcoin.py
 echo Something went wrong, exiting.
 pause

@@ -45,5 +45,5 @@ VK_TOKEN = токен
 
 ## Linux
 ```
-python manager.py
+python vkcoin.py
 ```

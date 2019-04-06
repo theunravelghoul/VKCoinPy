@@ -1,5 +1,4 @@
 import asyncio
-import configparser
 import logging
 import os
 from urllib.parse import urlparse
@@ -65,16 +64,3 @@ class VKCoinBotManager(object):
         event_loop = asyncio.get_event_loop()
         event_loop.create_task(self.bot.run())
         event_loop.run_forever()
-
-
-logging.basicConfig(level=logging.INFO)
-config = configparser.ConfigParser()
-config_file_path = os.path.join(os.getcwd(), 'config.ini')
-if not os.path.exists(config_file_path):
-    raise AttributeError("Config file not found!")
-config.read(config_file_path)
-try:
-    bot = VKCoinBotManager(config['BOT'])
-    bot.start()
-except KeyError:
-    raise AttributeError("Config does not contain BOT section!")
