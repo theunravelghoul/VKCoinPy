@@ -33,7 +33,7 @@ VK_TOKEN = токен
 1. `CURRENT_PLACE_MESSAGE_INTERVAL` - интервал между выводами в консоль текущей позиции в ТОПе в секундах
 2. `AUTOBUY_ENABLED` - True, если автозакупка должна работать, иначе - False. 
 3. `AUTOBUY_INTERVAL` - интервал между закупками в секундах
-4. `AUTOBUY_ITEMS` - вещи для автозакупки. Может быть CURSOR, CPU, CPU_STACK, COMPUTER, SERVER_VK, QUANTUM_PC, DATACENTER. 
+4. `AUTOBUY_ITEMS` - вещи для автозакупки. Может быть CURSOR, CPU, CPU_STACK, COMPUTER, SERVER_VK, QUANTUM_PC, DATACENTER.  Через запятую, например, `CURSOR,CPU`. 
 
 # Запуск
 Запуск бота осуществляется следующей командой из терминала или командной строки: 
