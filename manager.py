@@ -58,7 +58,7 @@ class VKCoinBotManager(object):
         self._get_current_user_data()
         server_url = self._get_server_websocket_url(
             channel=self._get_channel())
-        self.logger.info(f"Server URL: {server_url}")
+        self.logger.debug(f"Server URL: {server_url}")
         self.bot = VKCoinBot(server_url, config=self.config)
 
         event_loop = asyncio.get_event_loop()

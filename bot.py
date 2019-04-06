@@ -9,6 +9,7 @@ import vk_api
 import websockets
 
 from helpers import calculate_pow
+from logger import Logger
 
 
 class ResponseMessageTypes(object):
@@ -17,6 +18,7 @@ class ResponseMessageTypes(object):
     SELF_DATA = 'SELF_DATA'
     MISS = 'MISS'
     BROKEN = 'BROKEN'
+    TRANSFER = 'TR'
 
 
 class RequestMessageTypes(object):
@@ -135,9 +137,9 @@ class VKCoinBot(object):
     def report_player_score(self):
         score = round(int(self.score) / 1000, 3)
         speed = round(int(self.tick) / 1000, 2)
-        self.logger.info(
+        Logger.log_success(
             f'Coins: {score} | Speed: {speed} / tick | Place: {self.place}')
-        self.logger.info(' | '.join(
+        Logger.log_success(' | '.join(
             [f"{key}: {value}" for (key, value) in self.items.items()]))
 
     async def _connect(self) -> None:
@@ -192,7 +194,7 @@ class VKCoinBot(object):
                             Items, item), messages_sent=self.messages_sent
                     )
                     self._enqueue_message(message)
-                    self.logger.info(f'Trying to buy {item}')
+                    Logger.log_success(f'Trying to buy {item}')
 
             await asyncio.sleep(self.autobuy_interval)
 
@@ -200,7 +202,7 @@ class VKCoinBot(object):
         message = RequestMessageGenerator.generate_transfer_message(
             user_id=user_id, amount=amount, messages_sent=self.messages_sent)
         self._enqueue_message(message)
-        self.logger.info(f"Sending {amount} coins to user {user_id}")
+        Logger.log_success(f"Sending {amount} coins to user {user_id}")
 
     def _enqueue_message(self, message: str) -> None:
         self.message_queue.put(message)
@@ -214,15 +216,17 @@ class VKCoinBot(object):
                 self._process_place_message(message_string)
             if ResponseMessageTypes.BROKEN in message_string:
                 await self._process_broken_message()
+            if ResponseMessageTypes.TRANSFER in message_string:
+                self._process_transfer_message(message_string)
             if ResponseMessageTypes.SELF_DATA in message_string:
                 self._process_self_data_message(message_string)
             if ResponseMessageTypes.NOT_ENOUGH_COINS in message_string:
-                self.logger.info("Not enough coins to buy item")
+                Logger.log_warning("Not enough coins to buy item")
             if ResponseMessageTypes.MISS in message_string:
                 self.successful_messages = 0
                 self.missed_messages += 1
                 if self.missed_messages > self.missed_messages_limit:
-                    self.logger.error("Too many missclicks! Reconnecting...")
+                    Logger.log_error("Too many missclicks! Reconnecting...")
                     await self._reconnect(cleanup=True)
             return
 
@@ -232,20 +236,26 @@ class VKCoinBot(object):
                 await self._process_init_message(message)
         else:
             # Item buy message
-            self.logger.info(f"Bought an item")
+            Logger.log_success(f"Bought an item")
             self.tick = message.get('tick', self.tick)
             self.score = message.get('score', self.score)
             self._update_items(message.get('items'))
 
     async def _process_broken_message(self) -> None:
-        self.logger.info(
+        Logger.log_error(
             f"Servers are down, reconnecting in {self.reconnect_timeout} seconds")
         await self._reconnect()
 
     def _process_place_message(self, message: str) -> None:
         place = message.split(' ')[-1]
         self.place = place
-        self.logger.info(f"Current place: {place}")
+        Logger.log_success(f"Current place: {place}")
+
+    def _process_transfer_message(self, message: str) -> None:
+        data = message.split(' ')[1::]
+        amount = str(round(int(data[0]) / 1000))
+        sender = data[1]
+        Logger.log_success(f"Received {amount} coins from user {sender}")
 
     def _process_self_data_message(self, message: str) -> None:
         data = message.split(' ')[1::]
@@ -304,7 +314,7 @@ class VKCoinBot(object):
 
         self.messages_sent = 1
         self._start_sender()
-        self.logger.info("User has been loaded")
+        Logger.log_success("User has been loaded")
 
     async def _wait_for_message(self) -> None:
         message = await self.connection.recv()
@@ -356,8 +366,8 @@ class VKCoinBot(object):
         asyncio.get_running_loop().create_task(self._send_enqueued_messages())
 
     async def run(self) -> None:
-        self.logger.info(f"Connecting to {self.server_url}")
+        Logger.log_system("Connecting to VK Coin server")
         await self._connect()
-        self.logger.info("VKCoinPy is running...")
+        Logger.log_system("VKCoinPy is starting...")
         self._start_listener()
         await self._disconnect()
