@@ -2,3 +2,4 @@ aioconsole==0.1.14
 urllib3==1.24.1
 vk-api==11.4.0
 websockets==7.0
+Js2Py==0.60

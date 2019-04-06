@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import random
 from typing import Union
 
 import vk_api
@@ -82,14 +83,17 @@ class VKCoinBot(object):
         self.autobuy_enabled = self.config.getboolean('AUTOBUY_ENABLED', False)
         self.autobuy_interval = self.config.getint('AUTOBUY_INTERVAL', 10)
         self.autobuy_items = self.config.get("AUTOBUY_ITEMS", None)
-        self.missed_messages_limit = self.config.getint("MISSED_MESSAGES_LIMIT", 10)
+        self.missed_messages_limit = self.config.getint(
+            "MISSED_MESSAGES_LIMIT", 10)
 
         self.connected = False
         self.messages_sent = 1
         self.message_queue = []
         self.messages_enqueued = False
         self.missed_messages = 0
+        self.successful_messages = 0
         self.restart = False
+        self.tick_response_received = True
 
         self.place = 0
         self.score = 0
@@ -98,7 +102,7 @@ class VKCoinBot(object):
         self.random_id = None
 
     def report_player_score(self):
-        self.logger.info(f'Coins: {self.score} | Place: {self.place}')
+        self.logger.info(f'Coins: {round(int(self.score) / 1000, 3)} | Place: {self.place}')
 
     async def _connect(self) -> None:
         self.connection = await websockets.connect(self.server_url)
@@ -114,6 +118,9 @@ class VKCoinBot(object):
         self.logger.debug(f"Message has been sent: {message_content}")
         self.messages_sent += 1
 
+        if self.messages_sent > 9:
+            self.messages_sent = 1
+
     async def _send_enqueued_messages(self) -> None:
         while not self.restart:
             if len(self.message_queue):
@@ -126,8 +133,10 @@ class VKCoinBot(object):
 
     async def _enqueue_tick_messages(self) -> None:
         while not self.restart:
-            self._enqueue_message(RequestMessageGenerator.generate(
-                RequestMessageTypes.TICK, random_id=self.random_id, messages_sent=self.messages_sent))
+            if self.tick_response_received:
+                self._enqueue_message(RequestMessageGenerator.generate(
+                    RequestMessageTypes.TICK, random_id=self.random_id, messages_sent=self.messages_sent))
+                tick_response_received = False
             await asyncio.sleep(1)
 
     async def _enqueue_score_messages(self) -> None:
@@ -165,6 +174,7 @@ class VKCoinBot(object):
             if ResponseMessageTypes.NOT_ENOUGH_COINS in message_string:
                 self.logger.info("Not enough coins to buy item")
             if ResponseMessageTypes.MISS in message_string:
+                self.successful_messages = 0
                 self.missed_messages += 1
                 if self.missed_messages > self.missed_messages_limit:
                     self.logger.error("Too many missclicks! Reconnecting...")
@@ -187,12 +197,14 @@ class VKCoinBot(object):
         self.score = data[1]
 
         self.report_player_score()
+        self.tick_response_received = True
+        self.successful_messages += 1
+        self.missed_messages = 0
 
         if not self.messages_enqueued:
             if self.autobuy_enabled and self.autobuy_items:
                 asyncio.get_running_loop().create_task(self._enqueue_buy_messages())
             self.messages_enqueued = True
-
 
     async def _process_init_message(self, message: str) -> None:
         self.score = message.get('score')
@@ -250,6 +262,8 @@ class VKCoinBot(object):
         if cleanup:
             self.messages_sent = 1
             self.missed_messages = 0
+            self.successful_messages = 0
+            self.tick_response_received = True
             self.message_queue.clear()
         await self._connect()
         self.restart = False
