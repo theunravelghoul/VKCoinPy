@@ -102,7 +102,10 @@ class VKCoinBot(object):
         self.random_id = None
 
     def report_player_score(self):
-        self.logger.info(f'Coins: {round(int(self.score) / 1000, 3)} | Place: {self.place}')
+        score = round(int(self.score) / 1000, 3)
+        speed = round(int(self.tick) / 1000, 2)
+        self.logger.info(
+            f'Coins: {score} | Speed: {speed} / tick | Place: {self.place}')
 
     async def _connect(self) -> None:
         self.connection = await websockets.connect(self.server_url)
@@ -252,7 +255,7 @@ class VKCoinBot(object):
                 await asyncio.sleep(1)
                 await self._reconnect()
             except Exception:
-                self.logger.exception()
+                self.logger.debug()
                 self.logger.debug("Listener stopped")
         self.logger.debug("Listener stopped")
 
