@@ -41,10 +41,13 @@ class RequestMessageGenerator(object):
 
 
 class VKCoinBot(object):
-    def __init__(self, server_url):
+    def __init__(self, server_url, config=None):
         self.server_url = server_url
         self.logger = logging.getLogger(__file__)
-        self.logger.setLevel(logging.INFO)
+
+        self.config = config
+
+        self.get_place_message_interval = self.config.getint('CURRENT_PLACE_MESSAGE_INTERVAL', 10)
 
         self.connected = False
         self.messages_sent = 0
@@ -54,20 +57,22 @@ class VKCoinBot(object):
 
     async def _connect(self):
         self.connection = await websockets.connect(self.server_url)
+        self.connected = True
 
     def _disconnect(self):
         self.connection.close()
+        self.connected = False
 
     async def _send_message(self, message_content: str):
         message = f"P{self.messages_sent} {message_content}"
         await self.connection.send(message)
-        self.logger.info(f"Message has been sent: {message}")
+        self.logger.debug(f"Message has been sent: {message}")
         self.messages_sent += 1
 
     async def _send_enqueued_messages(self):
         while True:
-            self.logger.info("Sending enqueued messages...")
             if len(self.message_queue):
+                self.logger.debug("Sending enqueued messages...")
                 message = self.message_queue.pop()
                 await self._send_message(message)
             await asyncio.sleep(1)
@@ -76,7 +81,7 @@ class VKCoinBot(object):
         while True:
             self._enqueue_message(RequestMessageGenerator.generate(
                 RequestMessageTypes.GET_PLACE))
-            await asyncio.sleep(1)
+            await asyncio.sleep(self.get_place_message_interval)
 
     async def _enqueue_score_messages(self):
         while True:
@@ -88,12 +93,13 @@ class VKCoinBot(object):
         self.message_queue.append(message)
 
     async def _process_message(self, message_string):
-        self.logger.info(f"Received message: {message_string}")
         try:
             message = json.loads(message_string)
         except json.JSONDecodeError:
             if message_string[0] == 'C':
                 self._process_place_message(message_string)
+
+            self.logger.debug(f"Received message: {message_string}")
             return
         message_type = message.get('type')
         if message_type == ResponseMessageTypes.INIT:
