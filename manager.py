@@ -34,7 +34,7 @@ class VKCoinBotManager(object):
         host = parsed_base_url.netloc
         query = parsed_base_url.query
 
-        return f"{protocol}://{host}/channel/{channel}?{query}&pass={pass_hash}"
+        return f"{protocol}://{host}/channel/{channel}/?{query}&ver=1&pass={pass_hash}"
 
     def authorize(self):
         self.vk_session = vk_api.VkApi(token=self.vk_token)
@@ -51,7 +51,7 @@ class VKCoinBotManager(object):
         return mobile_iframe_url
 
     def _get_channel(self):
-        return self.vk_user_data['id'] % 16
+        return self.vk_user_data['id'] % 32
 
     def start(self):
         self.authorize()
