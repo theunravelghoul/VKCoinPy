@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-04-07 16:50+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: core/bot.py:18
+msgid "VKCoinPy bot is starting"
+msgstr "VKCoinPy запускается..."
+
+#: core/bot.py:19
+msgid "Connecting to the VK Coin app server"
+msgstr "Подключение к серверам VK Coin"
+
+#: core/networking.py:129
+msgid "Servers are down, reconnecting"
+msgstr "Проблема с подключением к серверам, переподключение..."
+
+#: core/networking.py:139
+msgid "Received {} coins from user {}"
+msgstr "Получен перевод в размере {} коинов от пользователя с ID {}"
+
+#: core/networking.py:156
+msgid "Not enough coins to buy an item"
+msgstr "Недостаточно коинов для авто-покупки предмета"
+
+#: core/networking.py:169
+msgid "Auto buying {}"
+msgstr "Производится авто-покупка {}"
+
+#: core/wallet.py:28
+msgid "Coins: {} | Speed: {} / tick | Place: {}"
+msgstr "Коины: {} | Скорость: {} / тик | Место в топе: {}"
+
+#: core/networking.py:116
+msgid "User has been loaded"
+msgstr "Пользователь успешно загружен"
+
+#: core/networking.py:120
+msgid "Bought an item"
+msgstr "Авто-закупкой куплен предмет"
+
+msgid "cursor"
+msgstr "Курсор"
+
+msgid "cpu"
+msgstr "Видеокарта"
+
+msgid "cpu_stack"
+msgstr "Стойка видеокарт"
+
+msgid "computer"
+msgstr "Суперкомпьютер"
+
+msgid "server_vk"
+msgstr "Сервер ВКонтакте"
+
+msgid "quantum_pc"
+msgstr "Квантовый компьютер"
+
+msgid "datacenter"
+msgstr "Датацентр"

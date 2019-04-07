@@ -1,6 +1,7 @@
-from core.enums import ItemTypes
 from typing import Dict
-from gettext import gettext as _
+
+from core.enums import ItemTypes
+from core.locale import _
 
 DEFAULT_ITEM_PRICES = {
     ItemTypes.CURSOR: 30,
@@ -25,10 +26,10 @@ class BotWallet(object):
     def get_player_score_report(self) -> str:
         score = round(int(self.score) / 1000, 3)
         speed = round(int(self.tick) / 1000, 2)
-        return _('Coins: {} | Speed: {} / tick | Place: {}'.format(score, speed, self.place))
+        return _('Coins: {} | Speed: {} / tick | Place: {}').format(score, speed, self.place)
 
     def get_player_items_report(self) -> str:
-        return _(' | '.join(["{}: {}".format(key, value) for (key, value) in self.items.items()]))
+        return ' | '.join(["{}: {}".format(_(key), value) for (key, value) in self.items.items()])
 
     def set_score(self, score: any) -> None:
         self.score = int(score)

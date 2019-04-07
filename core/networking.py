@@ -1,14 +1,14 @@
 import asyncio
 import json
 import logging
-from gettext import gettext as _
 from queue import Queue
 
 import js2py
 import websockets
 
-from core.enums import ResponseMessageTypes, ItemTypes, RequestMessageTypes
+from core.enums import ResponseMessageTypes, ItemTypes
 from core.helpers import calculate_pow
+from core.locale import _
 from core.message_generators import RequestMessageGenerator
 from .logger import Logger
 
@@ -113,11 +113,11 @@ class BotMessenger(object):
             return
 
         self.messages_sent = 1
-        Logger.log_success("User has been loaded")
+        Logger.log_success(_("User has been loaded"))
         await self._player_initialized()
 
     async def _handle_item_bought_message(self, message: dict) -> None:
-        Logger.log_success("Bought an item")
+        Logger.log_success(_("Bought an item"))
         self.tick = message.get('tick', self.bot.wallet.tick)
         self.score = message.get('score', self.bot.wallet.score)
         self.bot.wallet.update_items(message.get('items'))
@@ -136,7 +136,7 @@ class BotMessenger(object):
 
         amount = str(round(int(data[0]) / 1000))
         sender = data[1]
-        Logger.log_success(_("Received {} coins from user {}".format(amount, sender)))
+        Logger.log_success(_("Received {} coins from user {}").format(amount, sender))
 
     async def _handle_data_message(self, message: str) -> None:
         self.tick_message_response_received = True
@@ -166,7 +166,7 @@ class BotMessenger(object):
                         messages_sent=self.messages_sent
                     )
                     await self.send_message(message)
-                    Logger.log_success(_('Auto buying {}'.format(item)))
+                    Logger.log_success(_('Auto buying {}').format(item))
 
     async def _auto_action_transfer(self):
         receiver = self.bot.config.auto_transfer_to

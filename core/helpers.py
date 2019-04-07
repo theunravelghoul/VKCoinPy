@@ -15,4 +15,4 @@ def calculate_pow(p: str) -> int:
 
 def setup_logging(bot_config: dict) -> None:
     log_level = bot_config.get('LOG_LEVEL', 'INFO')
-    logging.basicConfig(level=log_level)
+    logging.basicConfig(level=log_level, format='%(message)s')

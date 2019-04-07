@@ -1,6 +1,6 @@
 import logging
-from gettext import gettext as _
 
+from core.locale import _
 from core.logger import Logger
 from . import config, wallet, networking
 
