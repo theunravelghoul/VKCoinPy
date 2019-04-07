@@ -77,7 +77,7 @@ class BotWallet(object):
         self.hourly_rate = self.tick * 3600
 
     def calculate_goal_time(self, goal: int) -> datetime.timedelta:
-        if goal < self.score / 1000:
+        if goal < self.score / 1000 or (self.tick / 1000) == 0:
             seconds = 0
         else:
             amount = goal - self.score / 1000
