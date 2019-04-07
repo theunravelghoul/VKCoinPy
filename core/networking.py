@@ -126,8 +126,10 @@ class BotMessenger(object):
 
     async def _handle_item_bought_message(self, message: dict) -> None:
         Logger.log_success(_("Bought an item"))
-        self.tick = message.get('tick', self.bot.wallet.tick)
-        self.score = message.get('score', self.bot.wallet.score)
+        tick = message.get('tick', self.bot.wallet.tick)
+        score = message.get('score', self.bot.wallet.score)
+        self.bot.wallet.set_tick(tick)
+        self.bot.wallet.set_score(score)
         self.bot.wallet.update_items(message.get('items'))
 
     async def _handle_missed_message(self) -> None:
