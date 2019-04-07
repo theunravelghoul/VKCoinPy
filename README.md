@@ -6,6 +6,8 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
  # Содержание
  - [Возможности](#features)
  - [Требования](#requirements)
+    - [Необходимое ПО](#soft-requirements)
+    - [Системные требования](#system-requirements)
  - [Запуск](#setup)
     - [Windows](#setup-windows) 
     - [Linux](#setup-linux) 
@@ -19,6 +21,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 # Возможности
 - Поддержка множества аккаунтов (запуск нескольких ботов в одном окне)
 - Автозакупка предметов
+- Высокая производительность (можно без проблем запускать на слабых VDS и телефонах)
 - Автопереводы в процентах
 - Автоперевод по достижению определенной суммы на балансе
 - Возможность задать цель и узнать примерное время ее достижения
@@ -28,6 +31,10 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 <a name = "requirements"/>
 
 # Требования
+
+<a name = "soft-requirements"/>
+
+## Необходимое ПО
 Для запуска бота необходимо установить Python 3.7.
 
 Скачать можно здесь:
@@ -36,6 +43,14 @@ https://www.python.org/downloads/
 Во время установки на Windows необходимо установить галочку `Add Python to Windows path`.
 
 После того, как Python установлен, необходимо установить зависимости. 
+
+<a name = "system-requirements"/>
+
+## Требования к системе
+При запуске майнинга с трех аккаунов одновременно VKCoinPy потребляет около 150
+мегабайт оперетивной памяти. Нагрузка на процессор минимальна. 
+
+> Таким образом, можно без проблем запускать бота на слабых VDS и даже телефонах.
 
 <a name = "setup"/>
 
