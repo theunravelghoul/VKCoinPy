@@ -80,20 +80,26 @@ class BotMessenger(object):
                 if message_type == ResponseMessageTypes.INIT:
                     await self._handle_init_message(message_json)
         except json.JSONDecodeError:
-            if message[0] == "C":
+            if ResponseMessageTypes.TRANSFER in message:
+                await self._handle_transfer_message(message)
+                return
+            if message[0] == "C" and "items" in message:
                 message_body = ' '.join(message.split(' ')[1::])
                 message_body_json = json.loads(message_body)
                 await self._handle_item_bought_message(message_body_json)
+                return
             if ResponseMessageTypes.BROKEN in message:
                 await self._handle_broken_message()
+                return
             if ResponseMessageTypes.MISS in message:
                 await self._handle_missed_message()
-            if ResponseMessageTypes.TRANSFER in message:
-                await self._handle_transfer_message(message)
+                return
             if ResponseMessageTypes.SELF_DATA in message:
                 await self._handle_data_message(message)
+                return
             if ResponseMessageTypes.NOT_ENOUGH_COINS in message:
                 await self._handle_not_enough_coins_message()
+                return
 
     async def _handle_init_message(self, message: dict) -> None:
         # Wallet data
