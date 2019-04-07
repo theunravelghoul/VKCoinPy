@@ -4,6 +4,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 [![Группа ВКонтакте](https://img.shields.io/badge/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20VK-VKCoinPy-green.svg)](https://vk.com/vkcoinpy)
 
  # Содержание
+ - [Возможности](#features)
  - [RoadMap](#roadmap)
  - [Требования](#requirements)
  - [Запуск](#setup)
@@ -11,20 +12,17 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
     - [Linux](#setup-linux) 
  - [Настройка](#config)
  - [Майнинг для сообщества](#public-mining)
-<a name = "roadmap"/>
 
-# RoadMap
-- [X] Цвета
-- [X] Автоматические переводы
-- [X] Доделать автозакупку предметов.
-- [X] Рефакторинг
-- [X] Русский язык
-- [ ] Умная автозакупка
-- [ ] Уведомления об обновлениях
-- [ ] Автоматическое обновление
-- [ ] Одновременный майнинг с нескольких аккаунтов
-- [ ] Статистика
-- [ ] Выгрузка статистики
+
+<a name = "features"/>
+
+# Возможности
+- Поддержка множества аккаунтов (запуск нескольких ботов в одном окне)
+- Автозакупка предметов
+- Автопереводы в процентах
+- Автоперевод по достижению определенной суммы на балансе
+- Возможность задать цель и узнать примерное время ее достижения
+- Автоподключение к серверу после разрыва соединения
 
 <a name = "requirements"/>
 
@@ -85,13 +83,64 @@ chmod +x start.sh
 > Если у вас включена двухфакторная аутентификация - вход по логину
 и паролю не сработает, нужен токен.
 
+
+
 Токен нужно вставить в config.json:
 
 ```
 "vk_token": "токен"
 ```
 
-Помимо этого, в `config.json` также можно прописывать следующие настройки: 
+
+`config.json` может содержать несколько ботов, таким образом, можно
+запускать много ботов в одном окне и получать всю информацию о них.
+Пример `config.json` с несколькими ботами:
+
+```json
+{
+  "bots": [
+    {
+      "vk_token": "token1",
+      "vk_use_credentials": false,
+      "vk_username": "",
+      "vk_password": "",
+      "vk_group_id": 180735282,
+      "auto_buy_enabled": false,
+      "auto_buy_interval": 60.0,
+      "auto_buy_items": [
+        "CURSOR",
+        "CPU"
+      ],
+      "auto_transfer_enabled": false,
+      "auto_transfer_to": 0,
+      "auto_transfer_when": 0,
+      "auto_transfer_percent": 1,
+      "goal": 1000000
+    },
+    {
+      "vk_token": "token2",
+      "vk_use_credentials": false,
+      "vk_username": "",
+      "vk_password": "",
+      "vk_group_id": 180735282,
+      "auto_buy_enabled": false,
+      "auto_buy_interval": 60.0,
+      "auto_buy_items": [
+        "CURSOR",
+        "CPU"
+      ],
+      "auto_transfer_enabled": false,
+      "auto_transfer_to": 0,
+      "auto_transfer_when": 0,
+      "auto_transfer_percent": 1,
+      "goal": 1000000
+    }
+  ],
+  "log_level": "INFO"
+}
+```
+
+Помимо этого, в `config.json` для каждого бота также можно прописывать следующие настройки: 
 
 | Параметр              | Описание                                                                                      |
 |-----------------------|-----------------------------------------------------------------------------------------------|
@@ -108,7 +157,6 @@ chmod +x start.sh
 | auto_transfer_when    | По достижению какой суммы выполнять перевод                                                   |
 | auto_transfer_percent | Сколько процентов баланса переводить                                                          |
 | goal                  | Цель в коинах                                                                                 |
-| log_level             | Уровень логов                                                                                 |
 
 
 > `auto_buy_items` перечисляются через запятую, может быть `CURSOR`, `CPU`, `CPU_STACK`, `COMPUTER`, `SERVER_VK`, `QUANTUM_PC`, `DATACENTER`. 
@@ -121,3 +169,18 @@ chmod +x start.sh
 
 **Майнинг для сообщества работает только в том случае, если вы указалаи `vk_use_credentials: true`,
 и правильно заполнили `vk_username`, `vk_password`**.
+
+<a name = "roadmap"/>
+
+# RoadMap
+- [X] Цвета
+- [X] Автоматические переводы
+- [X] Доделать автозакупку предметов.
+- [X] Рефакторинг
+- [X] Русский язык
+- [X] Одновременный майнинг с нескольких аккаунтов
+- [ ] Умная автозакупка
+- [ ] Уведомления об обновлениях
+- [ ] Автоматическое обновление
+- [ ] Статистика
+- [ ] Выгрузка статистики
