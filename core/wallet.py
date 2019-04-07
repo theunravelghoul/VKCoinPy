@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict
 
 from core.enums import ItemTypes
@@ -20,8 +21,8 @@ class BotWallet(object):
         self.score = 0
         self.tick = 0
         self.items = dict()
-
         self.item_prices = DEFAULT_ITEM_PRICES.copy()
+        self.hourly_rate = 0
 
     def get_player_score_report(self) -> str:
         score = round(int(self.score) / 1000, 3)
@@ -33,18 +34,23 @@ class BotWallet(object):
 
     def set_score(self, score: any) -> None:
         self.score = int(score)
+        self.on_update()
 
     def set_place(self, place: str) -> None:
         self.place = place
+        self.on_update()
 
     def set_tick(self, tick: any) -> None:
         self.tick = tick
+        self.calculate_hourly_rate()
+        self.on_update()
 
     def update_items(self, items: Dict) -> None:
         self.items = dict()
         for item in items:
             self.items[item] = self.items[item] + 1 if item in self.items.keys() else 0
         self.update_item_prices()
+        self.on_update()
 
     def _calculate_item_price(self, default_price, count) -> int:
         if count < 1:
@@ -66,3 +72,17 @@ class BotWallet(object):
 
         item_price = self.item_prices.get(item, 0)
         return self.score > item_price
+
+    def calculate_hourly_rate(self) -> None:
+        self.hourly_rate = self.tick * 3600
+
+    def calculate_goal_time(self, goal: int) -> datetime.timedelta:
+        if goal < self.score / 1000:
+            seconds = 0
+        else:
+            amount = goal - self.score / 1000
+            seconds = amount // self.tick
+        return datetime.timedelta(seconds=seconds)
+
+    def on_update(self) -> any:
+        pass

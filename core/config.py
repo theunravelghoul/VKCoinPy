@@ -1,8 +1,7 @@
 class BotConfig(object):
     def __init__(self, config):
-        # Intervals and timeouts
-        self.init_connection_retry_interval = config.getint(
-            'INIT_CONNECTION_RETRY_INTERVAL', 1)
+        # Common settings
+        self.goal = config.getint('GOAL', 0)
 
         # Auto buy settings
         self.auto_buy_enabled = config.getboolean('AUTOBUY_ENABLED', False)

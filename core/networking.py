@@ -36,6 +36,8 @@ class BotMessenger(object):
         self.random_id = None
         self.player_initialized = False
 
+        self.on_start_user_output_send = False
+
         self.disconnect_required = False
         self.reconnect_required = False
 
@@ -147,6 +149,9 @@ class BotMessenger(object):
         self.bot.wallet.set_place(data[0])
         self.bot.wallet.set_score(data[1])
 
+        if not self.on_start_user_output_send:
+            await self._send_on_start_user_output()
+
         score_report = self.bot.wallet.get_player_score_report()
         items_report = self.bot.wallet.get_player_items_report()
         Logger.log_success(score_report)
@@ -233,6 +238,32 @@ class BotMessenger(object):
             except asyncio.TimeoutError:
                 logger.debug("Connection timeout")
                 await self._require_disconnect()
+
+    async def _send_on_start_user_output(self):
+        if self.bot.config.goal:
+            goal_timedelta = self.bot.wallet.calculate_goal_time(self.bot.config.goal)
+            if goal_timedelta.total_seconds():
+                Logger.log_success(_("Your goal will be reached in {}").format(goal_timedelta))
+
+        option_status_on = _("On")
+        option_status_off = _("Off")
+
+        auto_buy_enabled = option_status_on if self.bot.config.auto_buy_enabled else option_status_off
+        Logger.log_system(_("Auto buy is {}").format(auto_buy_enabled))
+        auto_transfer_enabled = option_status_on if self.bot.config.auto_transfer_enabled else option_status_off
+        Logger.log_system(_("Auto transfer is {}").format(auto_transfer_enabled))
+
+        if auto_transfer_enabled == option_status_on:
+            auto_transfer_receiver = self.bot.config.auto_transfer_to
+            auto_transfer_percent = self.bot.config.auto_transfer_percent
+            auto_transfer_when = self.bot.config.auto_transfer_when
+
+            Logger.log_system(_("Auto transfer receiver is user with ID {}").format(auto_transfer_receiver))
+            Logger.log_system(
+                _("Auto transfer will be executed when balance will be more than {}").format(auto_transfer_when))
+            Logger.log_system(_("Auto transfer will send {} percent of your balance").format(auto_transfer_percent))
+
+        self.on_start_user_output_send = True
 
     async def run(self) -> int:
         await self._connect()

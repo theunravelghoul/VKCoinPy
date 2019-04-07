@@ -71,3 +71,27 @@ msgstr "Квантовый компьютер"
 
 msgid "datacenter"
 msgstr "Датацентр"
+
+msgid "Auto buy is {}"
+msgstr "Авто-покупка {}"
+
+msgid "Auto transfer is {}"
+msgstr "Автоматические переводы {}"
+
+msgid "On"
+msgstr "Включено"
+
+msgid "Off"
+msgstr "Выключено"
+
+msgid "Your goal will be reached in {}"
+msgstr "Цель будет достигнута через {}"
+
+msgid "Auto transfer receiver is user with ID {}"
+msgstr "Автоматический перевод будет производиться пользователю с ID {}"
+
+msgid "Auto transfer will be executed when balance will be more than {}"
+msgstr "Автоматический перевод будет осуществляться, если на балансе больще {} коинов"
+
+msgid "Auto transfer will send {} percent of your balance"
+msgstr "Автоматический перевод будет отправлять {} процентов Вашего баланса"
