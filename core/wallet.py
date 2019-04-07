@@ -81,7 +81,7 @@ class BotWallet(object):
             seconds = 0
         else:
             amount = goal - self.score / 1000
-            seconds = amount // self.tick
+            seconds = amount // (self.tick / 1000)
         return datetime.timedelta(seconds=seconds)
 
     def on_update(self) -> any:
