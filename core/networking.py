@@ -167,7 +167,7 @@ class BotMessenger(object):
         Logger.log_warning(_("Not enough coins to buy an item"))
 
     async def _auto_action_buy(self):
-        items = self.bot.config.auto_buy_items.split(",")
+        items = self.bot.config.auto_buy_items
 
         for item in items:
             if hasattr(ItemTypes, item):
