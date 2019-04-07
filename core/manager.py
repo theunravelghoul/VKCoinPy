@@ -1,47 +1,93 @@
 import asyncio
 import json
 import logging
-from typing import Dict
-from urllib.parse import urlparse
-
-import requests
-import vk_api
+import threading
+from typing import Dict, List
 
 from core.bot import VKCoinBot
-from core.helpers import get_pass, setup_logging
+from core.helpers import setup_logging
 from core.locale import _
+from core.logger import Logger
+from core.vk import VKConnector
+
+logger = logging.getLogger(__file__)
+
+
+class VKCoinBotSession(object):
+    def __init__(self, config: Dict):
+        self.config = config
+        vk_token = config.get("vk_token")
+        vk_username = config.get('vk_username')
+        vk_password = config.get('vk_password')
+        vk_use_credentials = config.get('vk_use_credentials')
+        vk_group_id = config.get('vk_group_id')
+
+        self.vk_connector = VKConnector(vk_token, vk_username, vk_password, vk_use_credentials, vk_group_id)
+        self.vk_user_id = None
+        self.bot = None
+
+    def setup(self):
+        Logger.log_system(_("Starting bot session"))
+
+        self.vk_connector.authorize()
+        self.vk_user_id = self.vk_connector.vk_user_id
+        server_url = self.vk_connector._get_server_url()
+
+        logger.debug("Server URL: {}".format(server_url))
+        Logger.log_system(_("Bot session created for user with ID {}").format(self.vk_user_id))
+
+        self.bot = VKCoinBot(server_url, self.config)
+
+
+class VKCoinBotSessionThread(threading.Thread):
+    def __init__(self, session: VKCoinBotSession):
+        super().__init__()
+        self.event_loop = None
+        self.session = session
+        self.name = "Bot ID{}".format(self.session.vk_user_id)
+
+    def run(self):
+        self.event_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.event_loop)
+        self.event_loop.run_until_complete(self.session.bot.run())
+
+    def add_task(self, coro):
+        task = self.event_loop.create_task(coro)
+        self.event_loop.call_soon_threadsafe(task)
 
 
 class VKCoinBotManager(object):
-    VK_COIN_APP_ID = 6915965
-
     def __init__(self):
         self.logger = logging.getLogger(__file__)
         self.logger.setLevel(logging.INFO)
 
-        self.vk_session = None
-        self.vk_user_data = None
-
-        self.config = self.load_config()
-
+        self.config = self.load_common_config()
         setup_logging(self.config)
+        self.bot_sessions = self.create_bot_sessions(self.config)
 
-        self.vk_token = self.config["vk_token"]
-        self.use_credentials = self.config["vk_use_credentials"]
-        self.vk_group_id = self.config.get("vk_group_id")
+    @staticmethod
+    def create_bot_sessions(config: Dict) -> List[VKCoinBotSession]:
+        bot_configs = config["bots"]
+        bot_count = len(bot_configs)
+        Logger.log_system(_("Found {} bots in config file").format(bot_count))
 
-        self.mine_for_vk_group = False
+        sessions = []
+        try:
+            for bot_config in bot_configs:
+                session = VKCoinBotSession(bot_config)
+                session.setup()
+                sessions.append(session)
+        except Exception as e:
+            Logger.log_error(_("Can not load bot with config #{}").format(config))
+            logger.exception(e)
 
-        if self.use_credentials:
-            self.vk_username = self.config.get('vk_username')
-            self.vk_password = self.config.get('vk_password')
-            if not self.vk_username or not self.vk_password:
-                raise AttributeError(_("You must set vk_username and vk_password when setting use_credentials:true"))
+        if not sessions:
+            Logger.log_error(_("No sessions created"))
 
-        if self.use_credentials and self.vk_group_id:
-            self.mine_for_vk_group = True
+        return sessions
 
-    def load_config(self) -> Dict:
+    @staticmethod
+    def load_common_config() -> Dict:
         try:
             with open("config.json", "r") as config_file:
                 config = json.load(config_file)
@@ -49,78 +95,7 @@ class VKCoinBotManager(object):
         except (json.JSONDecodeError, FileNotFoundError):
             print(_("Can not load config"))
 
-    def _get_server_url(self, channel):
-        base_url = self._get_mobile_iframe_url() if not self.mine_for_vk_group else self._get_group_mobile_iframe_url()
-        user_id = self.vk_user_data['id']
-        pass_hash = get_pass(user_id, 0)
-
-        parsed_base_url = urlparse(base_url)
-        protocol = "ws" if parsed_base_url.scheme == "http" else "wss"
-        host = parsed_base_url.netloc
-        query = parsed_base_url.query
-
-        return "{}://{}/channel/{}/?{}&ver=1&pass={}".format(protocol, host, channel, query, pass_hash)
-
-    def authorize(self):
-        if self.use_credentials:
-            self.vk_token = self._get_token_from_credentials()
-        self.vk_session = vk_api.VkApi(token=self.vk_token)
-
-    def _get_token_from_credentials(self) -> str:
-        api_auth_url = 'https://oauth.vk.com/token?grant_type=password&client_id=2274003' \
-                       '&client_secret=hHbZxrka2uZ6jB1inYsH&username={}&password={}'.format(self.vk_username,
-                                                                                            self.vk_password)
-        response = requests.get(api_auth_url)
-        token = response.json().get("access_token")
-        if not token:
-            raise Exception(_("Can not login with provided credentials"))
-        return token
-
-    def _handle_two_factor_auth(self, remember=True):
-        code = input(_("Enter two-factor auth code"))
-        return code, remember
-
-    def _get_current_user_data(self):
-        self.vk_user_data = self.vk_session.method('users.get')[0]
-
-    def _get_mobile_iframe_url(self):
-        app_data = self.vk_session.method(
-            'apps.get', {'app_id': self.VK_COIN_APP_ID}).get('items')[0]
-        mobile_iframe_url = app_data.get('mobile_iframe_url', None)
-        if mobile_iframe_url is None:
-            raise ValueError("Mobile Iframe URL is empty")
-        return mobile_iframe_url
-
-    def _get_group_mobile_iframe_url(self):
-        screen_name = "app{}_-{}".format(self.VK_COIN_APP_ID, self.vk_group_id)
-        owner_id = "-{}".format(self.vk_group_id)
-        param = {
-            'access_token': self.vk_token,
-            'v': 5.55,
-            'screen_name': screen_name,
-            'owner_id': owner_id,
-            'func_v': 3
-        }
-
-        response = requests.get('https://api.vk.com/method/execute.resolveScreenName', params=param).json()
-        if response.get('errors'):
-            raise ValueError(_("Can not load mobile_iframe_url from the VK API"))
-        mobile_iframe_url = response.get("response", {}).get("embedded_uri", {}).get("view_url")
-        if mobile_iframe_url is None:
-            raise ValueError("Mobile Iframe URL is empty")
-        return mobile_iframe_url
-
-    def _get_channel(self):
-        return self.vk_user_data['id'] % 32
-
     def start(self):
-        self.authorize()
-        self._get_current_user_data()
-        server_url = self._get_server_url(
-            channel=self._get_channel())
-        self.logger.debug("Server URL: {}".format(server_url))
-
-        bot = VKCoinBot(server_url, self.config)
-
-        event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(bot.run())
+        for session in self.bot_sessions:
+            session_thread = VKCoinBotSessionThread(session)
+            session_thread.start()

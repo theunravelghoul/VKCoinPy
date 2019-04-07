@@ -15,7 +15,7 @@ class VKCoinBot(object):
         self.messenger = None
 
     async def run(self) -> None:
-        Logger.log_system(_("VKCoinPy bot is starting"))
+        Logger.log_system(_("VKCoinPy bot session is starting"))
         Logger.log_system(_("Connecting to the VK Coin app server"))
         reconnect = 1
         while reconnect:

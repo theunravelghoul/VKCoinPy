@@ -1,16 +1,23 @@
 {
-  "vk_token": "",
-  "vk_use_credentials": false,
-  "vk_username": "",
-  "vk_password": "",
-  "vk_group_id": 180735282,
-  "auto_buy_enabled": false,
-  "auto_buy_interval": 60.0,
-  "auto_buy_items": ["cursor", "cpu"],
-  "auto_transfer_enabled": false,
-  "auto_transfer_to": 0,
-  "auto_transfer_when": 0,
-  "auto_transfer_percent": 1,
-  "goal": 1000000,
+  "bots": [
+    {
+      "vk_token": "",
+      "vk_use_credentials": false,
+      "vk_username": "",
+      "vk_password": "",
+      "vk_group_id": 180735282,
+      "auto_buy_enabled": false,
+      "auto_buy_interval": 60.0,
+      "auto_buy_items": [
+        "CURSOR",
+        "CPU"
+      ],
+      "auto_transfer_enabled": false,
+      "auto_transfer_to": 0,
+      "auto_transfer_when": 0,
+      "auto_transfer_percent": 1,
+      "goal": 1000000
+    }
+  ],
   "log_level": "INFO"
 }
