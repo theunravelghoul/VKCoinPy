@@ -64,7 +64,6 @@ VK_TOKEN = токен
 | AUTOBUY_ENABLED       | Автозакупка (True - включена, False - выключена) |
 | AUTOBUY_INTERVAL      | Интервал автозакупки в секундах                  |
 | AUTOBUY_ITEMS         | Предметы для автозакупки                         |
-| MISSED_MESSAGES_LIMIT | Лимит ошибок до переподключения                  |
 | AUTO_TRANSFER         | Автоперевод (True - включен, False - выключен)   |
 | AUTO_TRANSFER_TO      | ID пользователя для автоперевода                 |
 | AUTO_TRANSFER_WHEN    | По достижению какой суммы выполнять перевод      |
