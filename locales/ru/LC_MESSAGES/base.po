@@ -95,3 +95,24 @@ msgstr "Автоматический перевод будет осуществ�
 
 msgid "Auto transfer will send {} percent of your balance"
 msgstr "Автоматический перевод будет отправлять {} процентов Вашего баланса"
+
+msgid "Found {} bots in config file"
+msgstr "Обнаружено {} ботов в config.json"
+
+msgid "No sessions created"
+msgstr "Ни один бот не был запущен, проверьте config.json и настройки подключения"
+
+msgid "Starting bot session"
+msgstr "Запускается сессия бота"
+
+msgid "Bot session created for user with ID {}"
+msgstr "Сессия VKCoinPy запущена для пользователя с ID {}"
+
+msgid "Either token or credentials must be provided"
+msgstr "Токен или данные для входа должны быть заполнены в config.json"
+
+msgid "Username and password are not provided"
+msgstr "Логин или пароль не найдены"
+
+msgid "Can not login with provided credentials"
+msgstr "Невозможно выполнить вход с указанными данными"

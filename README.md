@@ -5,13 +5,13 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 
  # Содержание
  - [Возможности](#features)
- - [RoadMap](#roadmap)
  - [Требования](#requirements)
  - [Запуск](#setup)
     - [Windows](#setup-windows) 
     - [Linux](#setup-linux) 
  - [Настройка](#config)
  - [Майнинг для сообщества](#public-mining)
+ - [RoadMap](#roadmap)
 
 
 <a name = "features"/>
@@ -23,6 +23,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 - Автоперевод по достижению определенной суммы на балансе
 - Возможность задать цель и узнать примерное время ее достижения
 - Автоподключение к серверу после разрыва соединения
+- Возможность майнить для сообщества
 
 <a name = "requirements"/>
 
