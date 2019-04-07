@@ -1,5 +1,3 @@
-from typing import Union
-
 from core.enums import RequestMessageTypes
 
 

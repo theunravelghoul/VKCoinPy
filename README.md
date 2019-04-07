@@ -3,6 +3,16 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 
 [![Группа ВКонтакте](https://img.shields.io/badge/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20VK-VKCoinPy-green.svg)](https://vk.com/vkcoinpy)
 
+ # Содержание
+ - [RoadMap](#roadmap)
+ - [Требования](#requirements)
+ - [Запуск](#setup)
+    - [Windows](#setup-windows) 
+    - [Linux](#setup-linux) 
+ - [Настройка](#config)
+ - [Майнинг для сообщества](#public-mining)
+<a name = "roadmap"/>
+
 # RoadMap
 - [X] Цвета
 - [X] Автоматические переводы
@@ -10,6 +20,8 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 - [X] Рефакторинг
 - [ ] Одновременный майнинг с нескольких аккаунтов
 - [X] Русский язык
+
+<a name = "requirements"/>
 
 # Требования
 Для запуска бота необходимо установить Python 3.7.
@@ -21,11 +33,14 @@ https://www.python.org/downloads/
 
 После того, как Python установлен, необходимо установить зависимости. 
 
+<a name = "setup"/>
 
 # Запуск
 Бот запускается очень просто. 
 
 Для запуска необходимо установить зависимости. О том, как это сделать - ниже. 
+
+<a name = "setup-windows"/>
 
 ## Windows
 Установка зависимостей: 
@@ -33,6 +48,8 @@ https://www.python.org/downloads/
 
 Запуск бота:
 Запустить `start.bat`
+
+<a name = "setup-linux"/>
 
 ## Linux
 Установка зависимостей: 
@@ -47,6 +64,7 @@ chmod +x start.sh
 ./start.sh
 ```
 
+<a name = "config"/>
 
 # Настройка
 Для работы бота нужен токен ВК. 
@@ -70,22 +88,31 @@ chmod +x start.sh
 
 Помимо этого, в `config.json` также можно прописывать следующие настройки: 
 
-| Параметр              | Описание                                         |
-|-----------------------|--------------------------------------------------|
-| vk_token              | Токен страницы пользователя                      |
-| vk_use_credentials    | Поставить в `true`, если для входа должны быть использованы логин и пароль                       |
-| vk_username           | Логин ВКонтакте, если стоит `vk_use_credentials`                     |
-| vk_password           | Пароль ВКонтакте, если стоит `vk_use_credentials`                    |
-| vk_group_id           | ID сообщества, от имени которого будете майнить                      |
-| auto_buy_enabled       | Автозакупка (`true` - включена, `false` - выключена) |
-| auto_buy_interval      | Интервал автозакупки в секундах                  |
-| auto_buy_items         | Предметы для автозакупки                         |
-| auto_transfer_enabled         | Автоперевод (`true` - включен, `false` - выключен)   |
-| auto_transfer_to      | ID пользователя для автоперевода                 |
-| auto_transfer_when    | По достижению какой суммы выполнять перевод      |
-| auto_transfer_percent | Сколько процентов баланса переводить             |
-| goal                  | Цель в коинах                                    |
-| log_level             | Уровень логов                                    |
+| Параметр              | Описание                                                                                      |
+|-----------------------|-----------------------------------------------------------------------------------------------|
+| vk_token              | Токен страницы пользователя                                                                   |
+| vk_use_credentials    | Поставить в `true`, если для входа должны быть использованы логин и пароль                    |
+| vk_username           | Логин ВКонтакте, если стоит `vk_use_credentials`                                              |
+| vk_password           | Пароль ВКонтакте, если стоит `vk_use_credentials`                                             |
+| vk_group_id           | ID сообщества, от имени которого будете майнить. Необходимо использовать `vk_use_credentials` |
+| auto_buy_enabled      | Автозакупка (`true` - включена, `false` - выключена)                                          |
+| auto_buy_interval     | Интервал автозакупки в секундах                                                               |
+| auto_buy_items        | Предметы для автозакупки                                                                      |
+| auto_transfer_enabled | Автоперевод (`true` - включен, `false` - выключен)                                            |
+| auto_transfer_to      | ID пользователя для автоперевода                                                              |
+| auto_transfer_when    | По достижению какой суммы выполнять перевод                                                   |
+| auto_transfer_percent | Сколько процентов баланса переводить                                                          |
+| goal                  | Цель в коинах                                                                                 |
+| log_level             | Уровень логов                                                                                 |
 
 
 > `auto_buy_items` перечисляются через запятую, может быть `CURSOR`, `CPU`, `CPU_STACK`, `COMPUTER`, `SERVER_VK`, `QUANTUM_PC`, `DATACENTER`. 
+
+
+<a name = "public-mining"/>
+
+# Майнинг для сообщества
+Для того, чтобы майнить VK Coin для сообщества, необходимо указать `vk_group_id` (ID сообщества).
+
+**Майнинг для сообщества работает только в том случае, если вы указалаи `vk_use_credentials: true`,
+и правильно заполнили `vk_username`, `vk_password`**.
