@@ -9,6 +9,7 @@ from core.helpers import setup_logging
 from core.locale import _
 from core.logger import Logger
 from core.vk import VKConnector
+from core.wallet import BotWallet
 
 logger = logging.getLogger(__file__)
 
@@ -66,6 +67,8 @@ class VKCoinBotManager(object):
 
         self.config = self.load_common_config()
         setup_logging(self.config)
+
+        self.report_interval = self.config.get('report_interval', 60)
         self.bot_sessions = self.create_bot_sessions(self.config)
 
     @staticmethod
@@ -98,7 +101,36 @@ class VKCoinBotManager(object):
         except (json.JSONDecodeError, FileNotFoundError):
             print(_("Can not load config"))
 
+    def is_any_bot_running(self) -> bool:
+        return any([session.bot.is_connected for session in self.bot_sessions])
+
+    async def report(self):
+        bots_are_running = True
+        bots_were_connected = False
+
+        while bots_are_running or not bots_were_connected:
+            # Wait for any bot to connect on app start
+            if not bots_were_connected:
+                bots_were_connected = self.is_any_bot_running()
+                await asyncio.sleep(1)
+                continue
+
+            wallets: List[BotWallet] = [session.bot.wallet for session in self.bot_sessions]
+            summary_tick = sum([wallet.tick for wallet in wallets]) / 1000
+            summary_score = sum([wallet.score for wallet in wallets]) / 1000
+            summary_hourly_rate = sum([wallet.hourly_rate for wallet in wallets]) / 1000
+
+            Logger.log_warning(_("VKCoinPy stats"))
+            Logger.log_warning(
+                _("Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}").format(summary_tick,
+                                                                                                   summary_score,
+                                                                                                   summary_hourly_rate))
+            bots_are_running = self.is_any_bot_running()
+            await asyncio.sleep(self.report_interval)
+
     def start(self):
         for session in self.bot_sessions:
             session_thread = VKCoinBotSessionThread(session)
             session_thread.start()
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(self.report())

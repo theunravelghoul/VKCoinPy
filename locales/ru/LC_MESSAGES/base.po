@@ -119,3 +119,12 @@ msgstr "Невозможно выполнить вход с указанными
 
 msgid "Subscribe to our VK public"
 msgstr "Подпишись на наш паблик ВКонтакте"
+
+msgid "Hourly rate: {}"
+msgstr "Коинов в час: {}"
+
+msgid "VKCoinPy stats"
+msgstr "Общая статистика VKCoinPy"
+
+msgid "Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}"
+msgstr "Суммарная скорость: {} / tick | Суммарный баланс: {} | Суммарный доход: {} коинов в час"

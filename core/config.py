@@ -2,6 +2,7 @@ class BotConfig(object):
     def __init__(self, config):
         # Common settings
         self.goal = config.get("goal", 0)
+        self.progress_report_interval = config.get("progress_report_interval", 2)
 
         # Auto buy settings
         self.auto_buy_enabled = config.get('auto_buy_enabled', False)

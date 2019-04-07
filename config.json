@@ -16,8 +16,10 @@
       "auto_transfer_to": 0,
       "auto_transfer_when": 0,
       "auto_transfer_percent": 1,
-      "goal": 1000000
+      "goal": 1000000,
+      "progress_report_interval": 10
     }
   ],
+  "report_interval": 10,
   "log_level": "INFO"
 }

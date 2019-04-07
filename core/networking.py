@@ -71,6 +71,17 @@ class BotMessenger(object):
         self.player_initialized = True
         self.event_loop.create_task(self._send_tick_messages())
         self.event_loop.create_task(self._run_auto_actions())
+        self.event_loop.create_task(self._report_player_progress())
+
+    async def _report_player_progress(self):
+        while not self.disconnect_required:
+            score_report = self.bot.wallet.get_player_score_report()
+            items_report = self.bot.wallet.get_player_items_report()
+            stats_report = self.bot.wallet.get_player_stats_report()
+            Logger.log_success(score_report)
+            Logger.log_success(items_report)
+            Logger.log_success(stats_report)
+            await asyncio.sleep(self.bot.config.progress_report_interval)
 
     async def _process_received_message(self, message: str) -> None:
         try:
@@ -117,6 +128,7 @@ class BotMessenger(object):
             init_message_response = "C1 {} {}".format(self.random_id, c_pow)
             await self.send_message(init_message_response)
         except js2py.PyJsException:
+            self.connected = False
             await self._require_disconnect()
             return
 
@@ -159,11 +171,6 @@ class BotMessenger(object):
 
         if not self.on_start_user_output_send:
             await self._send_on_start_user_output()
-
-        score_report = self.bot.wallet.get_player_score_report()
-        items_report = self.bot.wallet.get_player_items_report()
-        Logger.log_success(score_report)
-        Logger.log_success(items_report)
 
     async def _handle_not_enough_coins_message(self) -> None:
         Logger.log_warning(_("Not enough coins to buy an item"))

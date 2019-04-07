@@ -14,6 +14,12 @@ class VKCoinBot(object):
         self.wallet = wallet.BotWallet()
         self.messenger = None
 
+        self.running = False
+
+    @property
+    def is_connected(self):
+        return self.messenger and self.messenger.connected
+
     async def run(self) -> None:
         Logger.log_system(_("VKCoinPy bot session is starting"))
         Logger.log_system(_("Connecting to the VK Coin app server"))

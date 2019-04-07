@@ -32,6 +32,10 @@ class BotWallet(object):
     def get_player_items_report(self) -> str:
         return ' | '.join(["{}: {}".format(_(key), value) for (key, value) in self.items.items()])
 
+    def get_player_stats_report(self) -> str:
+        hourly_rate = self.hourly_rate / 1000
+        return _("Hourly rate: {}").format(hourly_rate)
+
     def set_score(self, score: any) -> None:
         self.score = int(score)
         self.on_update()
