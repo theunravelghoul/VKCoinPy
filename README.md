@@ -5,8 +5,9 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 
 # RoadMap
 - [X] Цвета
-- [X] Переводы
+- [X] Автоматические переводы
 - [X] Доделать автозакупку предметов.
+- [X] Рефакторинг
 - [ ] Одновременный майнинг с нескольких аккаунтов
 - [ ] Русский язык
 

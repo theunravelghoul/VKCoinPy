@@ -1,5 +1,5 @@
-from manager import VKCoinBotManager
-from helpers import setup_logging
+from core.manager import VKCoinBotManager
+from core.helpers import setup_logging
 import configparser
 import os
 
@@ -15,6 +15,5 @@ except KeyError:
     raise AttributeError("Config does not contain [BOT] section!")
 
 setup_logging(bot_config=bot_config)
-
 bot = VKCoinBotManager(config['BOT'])
 bot.start()

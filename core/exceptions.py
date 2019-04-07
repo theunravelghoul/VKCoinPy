@@ -1,0 +1,2 @@
+class DisconnectRequiredError(Exception):
+    pass

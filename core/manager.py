@@ -1,12 +1,11 @@
 import asyncio
 import logging
-import os
 from urllib.parse import urlparse
 
 import vk_api
 
-from bot import VKCoinBot
-from helpers import get_pass
+from core.bot import VKCoinBot
+from core.helpers import get_pass
 
 
 class VKCoinBotManager(object):
@@ -34,7 +33,7 @@ class VKCoinBotManager(object):
         host = parsed_base_url.netloc
         query = parsed_base_url.query
 
-        return "{}://{}/channel/{}/?{}&ver=1&pass={}".format(protocol,host,channel,query,pass_hash)
+        return "{}://{}/channel/{}/?{}&ver=1&pass={}".format(protocol, host, channel, query, pass_hash)
 
     def authorize(self):
         self.vk_session = vk_api.VkApi(token=self.vk_token)
@@ -59,8 +58,8 @@ class VKCoinBotManager(object):
         server_url = self._get_server_websocket_url(
             channel=self._get_channel())
         self.logger.debug("Server URL: {}".format(server_url))
-        self.bot = VKCoinBot(server_url, config=self.config)
+
+        bot = VKCoinBot(server_url, self.config)
 
         event_loop = asyncio.get_event_loop()
-        event_loop.create_task(self.bot.run())
-        event_loop.run_forever()
+        event_loop.run_until_complete(bot.run())
