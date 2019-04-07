@@ -17,6 +17,8 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 Скачать можно здесь:
 https://www.python.org/downloads/
 
+Во время установки на Windows необходимо установить галочку `Add Python to Windows path`.
+
 После того, как Python установлен, необходимо установить зависимости. 
 
 
