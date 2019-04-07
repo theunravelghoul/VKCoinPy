@@ -126,6 +126,10 @@ class VKCoinBotManager(object):
                                                                                                    summary_score,
                                                                                                    summary_hourly_rate))
             bots_are_running = self.is_any_bot_running()
+            # Recheck, sometimes it returns False when bots are actually running, maybe some threading magic
+            if not bots_are_running:
+                await asyncio.sleep(1)
+                bots_are_running = self.is_any_bot_running()
             await asyncio.sleep(self.report_interval)
 
     def start(self):
