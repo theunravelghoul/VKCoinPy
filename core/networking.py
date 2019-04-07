@@ -241,6 +241,9 @@ class BotMessenger(object):
                 connection_timeout = self.WAIT_FOR_MESSAGE_TIMEOUT if self.player_initialized \
                     else self.WAIT_FOR_MESSAGE_TIMEOUT_BEFORE_PLAYER_INIT
                 await asyncio.wait_for(self._wait_for_message(), timeout=connection_timeout)
+            except websockets.exceptions.ConnectionClosed:
+                Logger.log_error(_("Connection closed, reconnecting"))
+                await self._require_disconnect(reconnect=True)
             except asyncio.TimeoutError:
                 logger.debug("Connection timeout")
                 await self._require_disconnect()
