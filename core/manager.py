@@ -31,6 +31,9 @@ class VKCoinBotSession(object):
 
         self.vk_connector.authorize()
         self.vk_user_id = self.vk_connector.vk_user_id
+
+        self.vk_connector.check_bot_group_subscription()
+
         server_url = self.vk_connector._get_server_url()
 
         logger.debug("Server URL: {}".format(server_url))

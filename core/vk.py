@@ -5,10 +5,13 @@ import vk_api
 
 from core.helpers import get_pass
 from core.locale import _
+from core.logger import Logger
 
 
 class VKConnector(object):
     VK_COIN_APP_ID = 6915965
+    BOT_GROUP_ID = 180735282
+    BOT_GROUP_URL = "https://vk.com/vkcoinpy"
 
     def __init__(self, token: str = None, username: str = None, password: str = None, use_credentials: bool = False,
                  vk_group_id=None):
@@ -68,9 +71,11 @@ class VKConnector(object):
             raise Exception(_("Can not login with provided credentials"))
         return token
 
-    def _handle_two_factor_auth(self, remember=True):
-        code = input(_("Enter two-factor auth code"))
-        return code, remember
+    def check_bot_group_subscription(self):
+        user_groups = self.vk_session.method("groups.get").get('items', [])
+        if self.BOT_GROUP_ID not in user_groups:
+            Logger.log_warning(_("Subscribe to our VK public"))
+            Logger.log_warning(self.BOT_GROUP_URL)
 
     def _get_current_user_data(self):
         self.vk_user_data = self.vk_session.method('users.get')[0]

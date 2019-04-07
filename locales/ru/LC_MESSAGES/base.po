@@ -116,3 +116,6 @@ msgstr "Логин или пароль не найдены"
 
 msgid "Can not login with provided credentials"
 msgstr "Невозможно выполнить вход с указанными данными"
+
+msgid "Subscribe to our VK public"
+msgstr "Подпишись на наш паблик ВКонтакте"
