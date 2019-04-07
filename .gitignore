@@ -1,6 +1,6 @@
 # Code editors
 .vscode/
-
+.idea/
 
 # Python virtual env
 .venv/

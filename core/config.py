@@ -1,11 +1,6 @@
 class BotConfig(object):
     def __init__(self, config):
         # Intervals and timeouts
-        self.current_place_message_interval = config.getint(
-            'CURRENT_PLACE_MESSAGE_INTERVAL', 10)
-        self.reconnect_timeout = config.getint('RECONNECT_TIMEOUT', 10)
-        self.enqueue_message_timeout = config.getint(
-            'ENQUEUE_MESSAGE_TIMEOUT', 1)
         self.init_connection_retry_interval = config.getint(
             'INIT_CONNECTION_RETRY_INTERVAL', 1)
 

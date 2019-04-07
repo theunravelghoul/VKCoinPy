@@ -21,7 +21,6 @@ class BotMessenger(object):
     QUEUE_SLEEP_TIME = 1.0
     PLAYER_INIT_RETRY_INTERVAL = 1.0
     TICK_MESSAGE_SEND_INTERVAL = 1.0
-    AUTO_ACTIONS_INTERVAL = 5.0
 
     def __init__(self, server_url, bot):
         self.server_url = server_url
@@ -78,11 +77,15 @@ class BotMessenger(object):
             if message_type:
                 if message_type == ResponseMessageTypes.INIT:
                     await self._handle_init_message(message_json)
-            else:
-                await self._handle_item_bought_message(message_json)
         except json.JSONDecodeError:
+            if message[0] == "C":
+                message_body = ' '.join(message.split(' ')[1::])
+                message_body_json = json.loads(message_body)
+                await self._handle_item_bought_message(message_body_json)
             if ResponseMessageTypes.BROKEN in message:
                 await self._handle_broken_message()
+            if ResponseMessageTypes.MISS in message:
+                await self._handle_missed_message()
             if ResponseMessageTypes.TRANSFER in message:
                 await self._handle_transfer_message(message)
             if ResponseMessageTypes.SELF_DATA in message:
@@ -115,9 +118,12 @@ class BotMessenger(object):
 
     async def _handle_item_bought_message(self, message: dict) -> None:
         Logger.log_success("Bought an item")
-        self.tick = message.get('tick', self.tick)
-        self.score = message.get('score', self.score)
-        self.bot.wallet_update_items(message.get('items'))
+        self.tick = message.get('tick', self.bot.wallet.tick)
+        self.score = message.get('score', self.bot.wallet.score)
+        self.bot.wallet.update_items(message.get('items'))
+
+    async def _handle_missed_message(self) -> None:
+        self.tick_message_response_received = True
 
     async def _handle_broken_message(self) -> None:
         Logger.log_error(_("Servers are down, reconnecting"))
@@ -154,12 +160,13 @@ class BotMessenger(object):
 
         for item in items:
             if hasattr(ItemTypes, item):
-                message = RequestMessageGenerator.generate(RequestMessageTypes.BUY_ITEM,
-                                                           item_id=getattr(ItemTypes, item),
-                                                           messages_sent=self.messages_sent
-                                                           )
-                await self.send_message(message)
-                Logger.log_success(_('Trying to buy {}'.format(item)))
+                if self.bot.wallet.has_player_enough_coins_to_buy(item):
+                    message = RequestMessageGenerator.generate_buy_item_message(
+                        item_id=getattr(ItemTypes, item),
+                        messages_sent=self.messages_sent
+                    )
+                    await self.send_message(message)
+                    Logger.log_success(_('Auto buying {}'.format(item)))
 
     async def _auto_action_transfer(self):
         receiver = self.bot.config.auto_transfer_to
@@ -180,10 +187,10 @@ class BotMessenger(object):
             if self.bot.config.auto_transfer_enabled:
                 await self._auto_action_transfer()
 
-            await asyncio.sleep(self.AUTO_ACTIONS_INTERVAL)
+            await asyncio.sleep(self.bot.config.auto_buy_interval)
 
     async def _serve_received_messages_queue(self):
-        logger.debug("Received messages queue is being served")
+        logger.debug("Received messages queue are being served")
         while not self.disconnect_required:
             if self.received_messages_queue.empty():
                 await asyncio.sleep(self.QUEUE_SLEEP_TIME)
@@ -192,7 +199,7 @@ class BotMessenger(object):
             await self._process_received_message(message)
 
     async def _serve_pending_messages_queue(self):
-        logger.debug("Pending messages queue is being served")
+        logger.debug("Pending messages queue are being served")
         while not self.disconnect_required:
             if self.pending_messages_queue.empty():
                 await asyncio.sleep(self.QUEUE_SLEEP_TIME)

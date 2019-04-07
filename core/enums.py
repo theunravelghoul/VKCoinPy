@@ -19,8 +19,8 @@ class RequestMessageTypes(object):
 class ItemTypes(object):
     CURSOR = "cursor"
     CPU = "cpu"
-    CPU_STACK = "CPU_STACK"
-    COMPUTER = "COMPUTER"
-    SERVER_VK = "SERVER_VK"
-    QUANTUM_PC = "QUANTUM_PC"
-    DATACENTER = "DATACENTER"
+    CPU_STACK = "cpu_stack"
+    COMPUTER = "computer"
+    SERVER_VK = "server_vk"
+    QUANTUM_PC = "quantum_pc"
+    DATACENTER = "datacenter"
