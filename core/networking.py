@@ -243,7 +243,7 @@ class BotMessenger(object):
         if self.bot.config.goal:
             goal_timedelta = self.bot.wallet.calculate_goal_time(self.bot.config.goal)
             if goal_timedelta.total_seconds():
-                Logger.log_success(_("Your goal will be reached in {}").format(goal_timedelta))
+                Logger.log_system(_("Your goal will be reached in {}").format(goal_timedelta))
 
         option_status_on = _("On")
         option_status_off = _("Off")
