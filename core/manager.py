@@ -100,6 +100,7 @@ class VKCoinBotManager(object):
             return config
         except (json.JSONDecodeError, FileNotFoundError):
             print(_("Can not load config"))
+            exit()
 
     def is_any_bot_running(self) -> bool:
         return any([session.bot.is_connected for session in self.bot_sessions])

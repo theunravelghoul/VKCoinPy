@@ -128,3 +128,6 @@ msgstr "Общая статистика VKCoinPy"
 
 msgid "Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}"
 msgstr "Суммарная скорость: {} / tick | Суммарный баланс: {} | Суммарный доход: {} коинов в час"
+
+msgid "Can not load config"
+msgstr "Невозможно загрузить config.json, проверьте правильность настроек"
