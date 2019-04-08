@@ -104,6 +104,9 @@ class VKCoinBotManager(object):
     def is_any_bot_running(self) -> bool:
         return any([session.bot.is_connected for session in self.bot_sessions])
 
+    def count_bots_running(self) -> int:
+        return len([session.bot for session in self.bot_sessions if session.bot.is_connected])
+
     async def report(self):
         bots_are_running = True
         bots_were_connected = False
@@ -121,6 +124,7 @@ class VKCoinBotManager(object):
             summary_hourly_rate = sum([wallet.hourly_rate for wallet in wallets]) / 1000
 
             Logger.log_warning(_("VKCoinPy stats"))
+            Logger.log_warning(_("{} bots are running").format(self.count_bots_running()))
             Logger.log_warning(
                 _("Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}").format(summary_tick,
                                                                                                    summary_score,

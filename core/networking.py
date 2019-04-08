@@ -250,12 +250,18 @@ class BotMessenger(object):
                 connection_timeout = self.WAIT_FOR_MESSAGE_TIMEOUT if self.player_initialized \
                     else self.WAIT_FOR_MESSAGE_TIMEOUT_BEFORE_PLAYER_INIT
                 await asyncio.wait_for(self._wait_for_message(), timeout=connection_timeout)
-            except websockets.exceptions.ConnectionClosed:
+            except (websockets.exceptions.ConnectionClosed, websockets.exceptions.InvalidStatusCode):
                 Logger.log_error(_("Connection closed, reconnecting"))
-                await self._require_disconnect(reconnect=True)
+                await self._require_disconnect()
             except asyncio.TimeoutError:
                 logger.debug("Connection timeout")
                 await self._require_disconnect()
+            except Exception as e:
+                await asyncio.sleep(10)
+                logger.exception(e)
+                Logger.log_error(_("Unknown error, reconnecting"))
+                await self._require_disconnect()
+
 
     async def _send_on_start_user_output(self):
         if self.bot.config.goal:
