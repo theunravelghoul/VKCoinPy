@@ -7,16 +7,14 @@
       "vk_password": "",
       "vk_group_id": 180735282,
       "auto_buy_enabled": false,
-      "auto_buy_interval": 60.0,
-      "auto_buy_items": [
-        "CURSOR",
-        "CPU"
-      ],
+      "auto_buy_interval": 1.0,
       "auto_transfer_enabled": false,
       "auto_transfer_to": 0,
       "auto_transfer_when": 0,
       "auto_transfer_percent": 1,
+      "auto_transfer_interval": 60,
       "goal": 1000000,
+      "progress_report_enabled": true,
       "progress_report_interval": 10
     }
   ],

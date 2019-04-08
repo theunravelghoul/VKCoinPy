@@ -123,10 +123,6 @@ chmod +x start.sh
       "vk_group_id": 180735282,
       "auto_buy_enabled": false,
       "auto_buy_interval": 60.0,
-      "auto_buy_items": [
-        "CURSOR",
-        "CPU"
-      ],
       "auto_transfer_enabled": false,
       "auto_transfer_to": 0,
       "auto_transfer_when": 0,
@@ -141,10 +137,6 @@ chmod +x start.sh
       "vk_group_id": 180735282,
       "auto_buy_enabled": false,
       "auto_buy_interval": 60.0,
-      "auto_buy_items": [
-        "CURSOR",
-        "CPU"
-      ],
       "auto_transfer_enabled": false,
       "auto_transfer_to": 0,
       "auto_transfer_when": 0,
@@ -167,16 +159,14 @@ chmod +x start.sh
 | vk_group_id              | ID сообщества, от имени которого будете майнить. Необходимо использовать `vk_use_credentials` |
 | auto_buy_enabled         | Автозакупка (`true` - включена, `false` - выключена)                                          |
 | auto_buy_interval        | Интервал автозакупки в секундах                                                               |
-| auto_buy_items           | Предметы для автозакупки                                                                      |
 | auto_transfer_enabled    | Автоперевод (`true` - включен, `false` - выключен)                                            |
 | auto_transfer_to         | ID пользователя для автоперевода                                                              |
 | auto_transfer_when       | По достижению какой суммы выполнять перевод                                                   |
 | auto_transfer_percent    | Сколько процентов баланса переводить                                                          |
+| auto_transfer_interval   | Интервал автоперевода                                                                         |
 | goal                     | Цель в коинах                                                                                 |
+| progress_report_enabled  | Включить вывод сообщений о прогрессе для каждого бота                                         |
 | progress_report_interval | Интервал сообщений о прогрессе в секундах                                                     |
-
-> `auto_buy_items` перечисляются через запятую, может быть `CURSOR`, `CPU`, `CPU_STACK`, `COMPUTER`, `SERVER_VK`, `QUANTUM_PC`, `DATACENTER`. 
-
 
 
 Общие настройки для всех ботов:

@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict
+from typing import Dict, Union
 
 from core.enums import ItemTypes
 from core.locale import _
@@ -12,6 +12,16 @@ DEFAULT_ITEM_PRICES = {
     ItemTypes.SERVER_VK: 50000,
     ItemTypes.QUANTUM_PC: 200000,
     ItemTypes.DATACENTER: 5000000
+}
+
+ITEM_STATS = {
+    ItemTypes.CURSOR: 1,
+    ItemTypes.CPU: 3,
+    ItemTypes.CPU_STACK: 10,
+    ItemTypes.COMPUTER: 30,
+    ItemTypes.SERVER_VK: 100,
+    ItemTypes.QUANTUM_PC: 500,
+    ItemTypes.DATACENTER: 1000
 }
 
 
@@ -52,7 +62,8 @@ class BotWallet(object):
     def update_items(self, items: Dict) -> None:
         self.items = dict()
         for item in items:
-            self.items[item] = self.items[item] + 1 if item in self.items.keys() else 0
+            if item in [getattr(ItemTypes, key) for key in ItemTypes.__dict__.keys()]:
+                self.items[item] = self.items[item] + 1 if item in self.items.keys() else 1
         self.update_item_prices()
         self.on_update()
 
@@ -63,7 +74,7 @@ class BotWallet(object):
 
     def calculate_item_price(self, item: ItemTypes) -> int:
         default_price = DEFAULT_ITEM_PRICES.get(item)
-        item_count = self.items.get(item, 0) + 1
+        item_count = self.items.get(item, 0)
         return self._calculate_item_price(default_price, item_count)
 
     def update_item_prices(self) -> None:
@@ -71,9 +82,7 @@ class BotWallet(object):
             self.item_prices[item] = self.calculate_item_price(item)
 
     def has_player_enough_coins_to_buy(self, item: str) -> bool:
-        item = getattr(ItemTypes, item)
         self.update_item_prices()
-
         item_price = self.item_prices.get(item, 0)
         return self.score > item_price
 
@@ -90,3 +99,22 @@ class BotWallet(object):
 
     def on_update(self) -> any:
         pass
+
+    def get_best_item_to_buy(self) -> Union[ItemTypes, None]:
+        if not self.items or not self.item_prices:
+            return None
+
+        sorted_by_price_items = sorted(self.items, reverse=True, key=lambda i: self.item_prices[i])
+        best_item = sorted_by_price_items[0]
+        for item in sorted_by_price_items[1::]:
+            best_item_price = self.item_prices[best_item]
+            best_item_efficiency = self.items[best_item] * ITEM_STATS[best_item]
+
+            item_efficiency = self.items[item] * ITEM_STATS[item]
+            item_price = self.item_prices[item]
+            diff = best_item_price // item_price
+            if diff > 1:
+                efficiency_diff = best_item_efficiency - item_efficiency * diff
+                if efficiency_diff < 0:
+                    best_item = item
+        return best_item

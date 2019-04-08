@@ -36,8 +36,8 @@ msgid "Not enough coins to buy an item"
 msgstr "Недостаточно коинов для авто-покупки предмета"
 
 #: core/networking.py:169
-msgid "Auto buying {}"
-msgstr "Производится авто-покупка {}"
+msgid "Best item to buy is {}. Buying."
+msgstr "Лучшая предмет для автозакупки - {}. Покупаем..."
 
 #: core/wallet.py:28
 msgid "Coins: {} | Speed: {} / tick | Place: {}"

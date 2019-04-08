@@ -69,9 +69,11 @@ class BotMessenger(object):
 
     async def _player_initialized(self):
         self.player_initialized = True
+        self._create_auto_actions()
+
         self.event_loop.create_task(self._send_tick_messages())
-        self.event_loop.create_task(self._run_auto_actions())
-        self.event_loop.create_task(self._report_player_progress())
+        if self.bot.config.progress_report_enabled:
+            self.event_loop.create_task(self._report_player_progress())
 
     async def _report_player_progress(self):
         while not self.disconnect_required:
@@ -133,7 +135,6 @@ class BotMessenger(object):
             return
 
         self.messages_sent = 1
-        Logger.log_success(_("User has been loaded"))
         await self._player_initialized()
 
     async def _handle_item_bought_message(self, message: dict) -> None:
@@ -176,38 +177,36 @@ class BotMessenger(object):
         Logger.log_warning(_("Not enough coins to buy an item"))
 
     async def _auto_action_buy(self):
-        items = self.bot.config.auto_buy_items
-
-        for item in items:
-            if hasattr(ItemTypes, item):
-                if self.bot.wallet.has_player_enough_coins_to_buy(item):
-                    message = RequestMessageGenerator.generate_buy_item_message(
-                        item_id=getattr(ItemTypes, item),
-                        messages_sent=self.messages_sent
-                    )
-                    await self.send_message(message)
-                    Logger.log_success(_('Auto buying {}').format(item))
+        while not self.disconnect_required:
+            item = self.bot.wallet.get_best_item_to_buy()
+            if item and self.bot.wallet.has_player_enough_coins_to_buy(item):
+                message = RequestMessageGenerator.generate_buy_item_message(
+                    item_id=item,
+                    messages_sent=self.messages_sent
+                )
+                await self.send_message(message)
+                Logger.log_success(_('Best item to buy is {}. Buying.').format(item))
+            await asyncio.sleep(self.bot.config.auto_buy_interval)
 
     async def _auto_action_transfer(self):
-        receiver = self.bot.config.auto_transfer_to
-        transfer_when = self.bot.config.auto_transfer_when
-        transfer_percent = self.bot.config.auto_transfer_percent
-
-        if self.bot.wallet.score / 1000 > transfer_when:
-            transfer_amount = self.bot.wallet.score * (transfer_percent / 100)
-            message = RequestMessageGenerator.generate_transfer_message(amount=transfer_amount, user_id=receiver,
-                                                                        messages_sent=self.messages_sent)
-            await self.send_message(message)
-
-    async def _run_auto_actions(self):
         while not self.disconnect_required:
-            if self.bot.config.auto_buy_enabled:
-                await self._auto_action_buy()
+            receiver = self.bot.config.auto_transfer_to
+            transfer_when = self.bot.config.auto_transfer_when
+            transfer_percent = self.bot.config.auto_transfer_percent
 
-            if self.bot.config.auto_transfer_enabled:
-                await self._auto_action_transfer()
+            if self.bot.wallet.score / 1000 > transfer_when:
+                transfer_amount = self.bot.wallet.score * (transfer_percent / 100)
+                message = RequestMessageGenerator.generate_transfer_message(amount=transfer_amount, user_id=receiver,
+                                                                            messages_sent=self.messages_sent)
+                await self.send_message(message)
+            await asyncio.sleep(self.bot.config.auto_transfer_interval)
 
-            await asyncio.sleep(self.bot.config.auto_buy_interval)
+    def _create_auto_actions(self):
+        if self.bot.config.auto_buy_enabled:
+            self.event_loop.create_task(self._auto_action_buy())
+
+        if self.bot.config.auto_transfer_enabled:
+            self.event_loop.create_task(self._auto_action_transfer())
 
     async def _serve_received_messages_queue(self):
         logger.debug("Received messages queue are being served")
@@ -262,8 +261,9 @@ class BotMessenger(object):
                 Logger.log_error(_("Unknown error, reconnecting"))
                 await self._require_disconnect()
 
-
     async def _send_on_start_user_output(self):
+        Logger.log_success(_("User has been loaded"))
+
         if self.bot.config.goal:
             goal_timedelta = self.bot.wallet.calculate_goal_time(self.bot.config.goal)
             if goal_timedelta.total_seconds():
