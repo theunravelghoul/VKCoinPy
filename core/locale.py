@@ -1,6 +1,4 @@
 import gettext
 
-ru = gettext.translation('base', localedir='locales', languages=['ru'])
-ru.install()
-
-_ = ru.gettext
+lang = gettext.translation('base', localedir='locales')
+_ = lang.gettext

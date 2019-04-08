@@ -6,7 +6,7 @@ from queue import Queue
 import js2py
 import websockets
 
-from core.enums import ResponseMessageTypes, ItemTypes
+from core.enums import ResponseMessageTypes
 from core.helpers import calculate_pow
 from core.locale import _
 from core.message_generators import RequestMessageGenerator

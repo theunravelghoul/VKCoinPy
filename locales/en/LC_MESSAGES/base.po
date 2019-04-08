@@ -1,0 +1,153 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-04-09 00:30+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: core/bot.py:24
+msgid "VKCoinPy bot session is starting"
+msgstr ""
+
+#: core/bot.py:25
+msgid "Connecting to the VK Coin app server"
+msgstr ""
+
+#: core/manager.py:31
+msgid "Starting bot session"
+msgstr ""
+
+#: core/manager.py:41
+msgid "Bot session created for user with ID {}"
+msgstr ""
+
+#: core/manager.py:78
+msgid "Found {} bots in config file"
+msgstr ""
+
+#: core/manager.py:87
+msgid "Can not load bot with config #{}"
+msgstr ""
+
+#: core/manager.py:91
+msgid "No sessions created"
+msgstr ""
+
+#: core/manager.py:102
+msgid "Can not load config"
+msgstr ""
+
+#: core/manager.py:127
+msgid "VKCoinPy stats"
+msgstr ""
+
+#: core/manager.py:128
+msgid "{} bots are running"
+msgstr ""
+
+#: core/manager.py:130
+msgid "Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}"
+msgstr ""
+
+#: core/networking.py:141
+msgid "Bought an item"
+msgstr ""
+
+#: core/networking.py:152
+msgid "Servers are down, reconnecting"
+msgstr ""
+
+#: core/networking.py:162
+msgid "Received {} coins from user {}"
+msgstr ""
+
+#: core/networking.py:177
+msgid "Not enough coins to buy an item"
+msgstr ""
+
+#: core/networking.py:188
+msgid "Best item to buy is {}. Buying."
+msgstr ""
+
+#: core/networking.py:253
+msgid "Connection closed, reconnecting"
+msgstr ""
+
+#: core/networking.py:261
+msgid "Unknown error, reconnecting"
+msgstr ""
+
+#: core/networking.py:265
+msgid "User has been loaded"
+msgstr ""
+
+#: core/networking.py:270
+msgid "Your goal will be reached in {}"
+msgstr ""
+
+#: core/networking.py:272
+msgid "On"
+msgstr ""
+
+#: core/networking.py:273
+msgid "Off"
+msgstr ""
+
+#: core/networking.py:276
+msgid "Auto buy is {}"
+msgstr ""
+
+#: core/networking.py:278
+msgid "Auto transfer is {}"
+msgstr ""
+
+#: core/networking.py:285
+msgid "Auto transfer receiver is user with ID {}"
+msgstr ""
+
+#: core/networking.py:287
+msgid "Auto transfer will be executed when balance will be more than {}"
+msgstr ""
+
+#: core/networking.py:288
+msgid "Auto transfer will send {} percent of your balance"
+msgstr ""
+
+#: core/vk.py:19
+msgid "Either token or credentials must be provided"
+msgstr ""
+
+#: core/vk.py:22
+msgid "Username and password are not provided"
+msgstr ""
+
+#: core/vk.py:71
+msgid "Can not login with provided credentials"
+msgstr ""
+
+#: core/vk.py:77
+msgid "Subscribe to our VK public"
+msgstr ""
+
+#: core/vk.py:104
+msgid "Can not load mobile_iframe_url from the VK API"
+msgstr ""
+
+#: core/wallet.py:40
+msgid "Coins: {} | Speed: {} / tick | Place: {}"
+msgstr ""
+
+#: core/wallet.py:47
+msgid "Hourly rate: {}"
+msgstr ""
+
