@@ -11,6 +11,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
  - [Запуск](#setup)
     - [Windows](#setup-windows) 
     - [Linux](#setup-linux) 
+    - [Docker](#setup-docker)
  - [Настройка](#config)
  - [Майнинг для сообщества](#public-mining)
  - [RoadMap](#roadmap)
@@ -83,6 +84,17 @@ chmod +x start.sh
 ./start.sh
 ```
 
+<a name = "setup-docker"/>
+
+## Docker
+Сборка образа:
+```bash
+docker build -t theunravelghoul/vkcoinpy .
+```
+Запуск:
+```bash
+docker run -it --rm theunravelghoul/vkcoinpy
+```
 <a name = "config"/>
 
 # Настройка
