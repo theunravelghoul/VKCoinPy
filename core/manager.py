@@ -109,16 +109,7 @@ class VKCoinBotManager(object):
         return len([session.bot for session in self.bot_sessions if session.bot.is_connected])
 
     async def report(self):
-        bots_are_running = True
-        bots_were_connected = False
-
-        while bots_are_running or not bots_were_connected:
-            # Wait for any bot to connect on app start
-            if not bots_were_connected:
-                bots_were_connected = self.is_any_bot_running()
-                await asyncio.sleep(1)
-                continue
-
+        while True:
             wallets: List[BotWallet] = [session.bot.wallet for session in self.bot_sessions]
             summary_tick = sum([wallet.tick for wallet in wallets]) / 1000
             summary_score = sum([wallet.score for wallet in wallets]) / 1000
@@ -130,11 +121,6 @@ class VKCoinBotManager(object):
                 _("Summary speed: {} / tick | Summary score: {} | Summary hourly rate: {}").format(summary_tick,
                                                                                                    summary_score,
                                                                                                    summary_hourly_rate))
-            bots_are_running = self.is_any_bot_running()
-            # Recheck, sometimes it returns False when bots are actually running, maybe some threading magic
-            if not bots_are_running:
-                await asyncio.sleep(1)
-                bots_are_running = self.is_any_bot_running()
             await asyncio.sleep(self.report_interval)
 
     def start(self):
