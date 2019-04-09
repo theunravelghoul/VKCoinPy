@@ -61,11 +61,15 @@ class VKCoinBotSessionThread(threading.Thread):
 
 
 class VKCoinBotManager(object):
-    def __init__(self):
+    def __init__(self, config=None):
         self.logger = logging.getLogger(__file__)
         self.logger.setLevel(logging.INFO)
 
-        self.config = self.load_common_config()
+        if not config:
+            self.config = self.load_common_config()
+        else:
+            self.config = config
+
         setup_logging(self.config)
 
         self.report_interval = self.config.get('report_interval', 60)

@@ -5,3 +5,4 @@ websockets==7.0
 Js2Py==0.60
 crayons==0.2.0
 requests==2.21.0
+daemonize==2.5.0

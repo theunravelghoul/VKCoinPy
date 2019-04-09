@@ -20,5 +20,6 @@
     }
   ],
   "report_interval": 10,
+  "daemon": false,
   "log_level": "INFO"
 }
