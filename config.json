@@ -8,6 +8,7 @@
       "vk_group_id": 180735282,
       "auto_buy_enabled": false,
       "auto_buy_interval": 1.0,
+      "auto_buy_target_tick": 20.0,
       "auto_transfer_enabled": false,
       "auto_transfer_to": 0,
       "auto_transfer_when": 0,

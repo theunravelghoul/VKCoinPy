@@ -78,14 +78,13 @@ class VKCoinBotManager(object):
         Logger.log_system(_("Found {} bots in config file").format(bot_count))
 
         sessions = []
-        try:
-            for bot_config in bot_configs:
+        for bot_config in bot_configs:
+            try:
                 session = VKCoinBotSession(bot_config)
                 session.setup()
                 sessions.append(session)
-        except Exception as e:
-            Logger.log_error(_("Can not load bot with config #{}").format(config))
-            logger.exception(e)
+            except Exception:
+                Logger.log_error(_("Can not load bot with config #{}").format(config))
 
         if not sessions:
             Logger.log_error(_("No sessions created"))
@@ -126,6 +125,9 @@ class VKCoinBotManager(object):
     def start(self):
         for session in self.bot_sessions:
             session_thread = VKCoinBotSessionThread(session)
-            session_thread.start()
+            try:
+                session_thread.start()
+            except:
+                Logger.log_error(_("Can not start session for bot ID{}").format(session.vk_user_id))
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(self.report())

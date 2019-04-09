@@ -8,6 +8,7 @@ class BotConfig(object):
         # Auto buy settings
         self.auto_buy_enabled = config.get('auto_buy_enabled', False)
         self.auto_buy_interval = config.get('auto_buy_interval', 10)
+        self.auto_buy_target_tick = config.get('auto_buy_target_tick', 20)
 
         # Auto transfer settings
         self.auto_transfer_enabled = config.get("auto_transfer_enabled", False)

@@ -45,10 +45,24 @@ class BotMessenger(object):
         self.connected = False
 
     async def _connect(self) -> None:
+        max_connection_attempts = 10
+        connection_attempts = 0
+
         logger.debug("Connecting to the VK Coin app server")
-        self.connection = await websockets.connect(self.server_url)
-        self.connected = True
-        logger.debug("Connection established")
+
+        self.connection = None
+        while not self.connection and connection_attempts < max_connection_attempts:
+            try:
+                self.connection = await websockets.connect(self.server_url)
+                self.connected = True
+                logger.debug("Connection established")
+                return
+            except:
+                connection_attempts += 1
+                await asyncio.sleep(1)
+
+        Logger.log_error(_("Can not connect to the server. Max connection attempts reached."))
+        self._require_disconnect(reconnect=False)
 
     async def _disconnect(self) -> None:
         logger.debug("Disconnecting from the VK Coin app server")
@@ -56,7 +70,7 @@ class BotMessenger(object):
         self.connected = False
         logger.debug("Connection closed")
 
-    async def _require_disconnect(self, reconnect=True) -> None:
+    def _require_disconnect(self, reconnect=True) -> None:
         self.disconnect_required = True
         self.reconnect_required = reconnect
 
@@ -131,7 +145,7 @@ class BotMessenger(object):
             await self.send_message(init_message_response)
         except js2py.PyJsException:
             self.connected = False
-            await self._require_disconnect()
+            self._require_disconnect()
             return
 
         self.messages_sent = 1
@@ -178,14 +192,17 @@ class BotMessenger(object):
 
     async def _auto_action_buy(self):
         while not self.disconnect_required:
-            item = self.bot.wallet.get_best_item_to_buy()
-            if item and self.bot.wallet.has_player_enough_coins_to_buy(item):
-                message = RequestMessageGenerator.generate_buy_item_message(
-                    item_id=item,
-                    messages_sent=self.messages_sent
-                )
-                await self.send_message(message)
-                Logger.log_success(_('Best item to buy is {}. Buying.').format(item))
+            if self.bot.config.auto_buy_target_tick * 1000 > self.bot.wallet.tick:
+                item = self.bot.wallet.get_best_item_to_buy()
+                if item and self.bot.wallet.has_player_enough_coins_to_buy(item):
+                    message = RequestMessageGenerator.generate_buy_item_message(
+                        item_id=item,
+                        messages_sent=self.messages_sent
+                    )
+                    await self.send_message(message)
+                    Logger.log_success(_('Best item to buy is {}. Buying.').format(item))
+            else:
+                return
             await asyncio.sleep(self.bot.config.auto_buy_interval)
 
     async def _auto_action_transfer(self):
@@ -251,15 +268,15 @@ class BotMessenger(object):
                 await asyncio.wait_for(self._wait_for_message(), timeout=connection_timeout)
             except (websockets.exceptions.ConnectionClosed, websockets.exceptions.InvalidStatusCode):
                 Logger.log_error(_("Connection closed, reconnecting"))
-                await self._require_disconnect()
+                self._require_disconnect()
             except asyncio.TimeoutError:
                 logger.debug("Connection timeout")
-                await self._require_disconnect()
+                self._require_disconnect()
             except Exception as e:
                 await asyncio.sleep(10)
                 logger.exception(e)
                 Logger.log_error(_("Unknown error, reconnecting"))
-                await self._require_disconnect()
+                self._require_disconnect()
 
     async def _send_on_start_user_output(self):
         Logger.log_success(_("User has been loaded"))

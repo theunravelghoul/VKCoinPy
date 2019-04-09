@@ -24,6 +24,16 @@ ITEM_STATS = {
     ItemTypes.DATACENTER: 1000
 }
 
+ITEMS_AVAILABLE = [
+    ItemTypes.CURSOR,
+    ItemTypes.CPU,
+    ItemTypes.CPU_STACK,
+    ItemTypes.COMPUTER,
+    ItemTypes.SERVER_VK,
+    ItemTypes.QUANTUM_PC,
+    ItemTypes.DATACENTER
+]
+
 
 class BotWallet(object):
     def __init__(self):
@@ -60,10 +70,10 @@ class BotWallet(object):
         self.on_update()
 
     def update_items(self, items: Dict) -> None:
-        self.items = dict()
+        self.items = {item: 0 for item in ITEMS_AVAILABLE}
         for item in items:
-            if item in [getattr(ItemTypes, key) for key in ItemTypes.__dict__.keys()]:
-                self.items[item] = self.items[item] + 1 if item in self.items.keys() else 1
+            if item in ITEMS_AVAILABLE:
+                self.items[item] = self.items[item] + 1
         self.update_item_prices()
         self.on_update()
 
