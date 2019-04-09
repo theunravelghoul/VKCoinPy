@@ -159,6 +159,7 @@ chmod +x start.sh
 | vk_group_id              | ID сообщества, от имени которого будете майнить. Необходимо использовать `vk_use_credentials` |
 | auto_buy_enabled         | Автозакупка (`true` - включена, `false` - выключена)                                          |
 | auto_buy_interval        | Интервал автозакупки в секундах                                                               |
+| auto_buy_target_tick     | Скорость, до которой будет производиться автозакупка (например, 20 коинов\тик = 20)           |
 | auto_transfer_enabled    | Автоперевод (`true` - включен, `false` - выключен)                                            |
 | auto_transfer_to         | ID пользователя для автоперевода                                                              |
 | auto_transfer_when       | По достижению какой суммы выполнять перевод                                                   |
