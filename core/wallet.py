@@ -118,9 +118,9 @@ class BotWallet(object):
         best_item = sorted_by_price_items[0]
         for item in sorted_by_price_items[1::]:
             best_item_price = self.item_prices[best_item]
-            best_item_efficiency = self.items[best_item] * ITEM_STATS[best_item]
+            best_item_efficiency = (self.items[best_item] + 1) * ITEM_STATS[best_item]
 
-            item_efficiency = self.items[item] * ITEM_STATS[item]
+            item_efficiency = (self.items[item] + 1) * ITEM_STATS[item]
             item_price = self.item_prices[item]
             diff = best_item_price // item_price
             if diff > 1:

@@ -15,10 +15,11 @@
       "auto_transfer_percent": 1,
       "auto_transfer_interval": 60,
       "goal": 1000000,
-      "progress_report_enabled": true,
+      "progress_report_enabled": false,
       "progress_report_interval": 10
     }
   ],
+  "report_enabled": true,
   "report_interval": 10,
   "log_level": "INFO"
 }

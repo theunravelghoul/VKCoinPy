@@ -68,6 +68,7 @@ class VKCoinBotManager(object):
         self.config = self.load_common_config()
         setup_logging(self.config)
 
+        self.report_enabled = self.config.get('report_enabled', True)
         self.report_interval = self.config.get('report_interval', 60)
         self.bot_sessions = self.create_bot_sessions(self.config)
 
@@ -130,4 +131,6 @@ class VKCoinBotManager(object):
             except:
                 Logger.log_error(_("Can not start session for bot ID{}").format(session.vk_user_id))
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(self.report())
+        if self.report_enabled:
+            event_loop.create_task(self.report())
+        event_loop.run_forever()
