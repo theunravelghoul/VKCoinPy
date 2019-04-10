@@ -15,6 +15,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
  - [Настройка](#config)
     - [Получение токена](#config-token)
     - [Настройка config.json](#config-json)
+ - [Часто задаваемые вопросы](#faq)
  - [Майнинг для сообщества](#public-mining)
  - [RoadMap](#roadmap)
 
@@ -199,6 +200,18 @@ docker run -it --rm theunravelghoul/vkcoinpy
 | report_interval | Интервал отчета по всем ботам в секундах |
 
 
+<a name = "faq"/>
+
+# Часто задаваемые вопросы
+> Появляется ошибка `No translation file found for domain...`, что делать?
+
+Ошибка может возникать на Windows. В последних версиях бота она полностью исправлена. 
+Решение - обновить бота, либо запускать его не через `start.bat`, а 
+из командной строки.
+
+> Как включить умную автопокупку? 
+
+Умная автопокупка включена по умолчанию.
 
 <a name = "public-mining"/>
 
