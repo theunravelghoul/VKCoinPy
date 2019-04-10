@@ -85,7 +85,7 @@ class VKCoinBotManager(object):
                 session.setup()
                 sessions.append(session)
             except Exception:
-                Logger.log_error(_("Can not load bot with config #{}").format(config))
+                Logger.log_error(_("Can not load bot with config #{}").format(bot_config))
 
         if not sessions:
             Logger.log_error(_("No sessions created"))
