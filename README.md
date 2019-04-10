@@ -13,6 +13,8 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
     - [Linux](#setup-linux) 
     - [Docker](#setup-docker)
  - [Настройка](#config)
+    - [Получение токена](#config-token)
+    - [Настройка config.json](#config-json)
  - [Майнинг для сообщества](#public-mining)
  - [RoadMap](#roadmap)
 
@@ -26,6 +28,7 @@ A bot for vk.com (Russian social network) virtual currency (VKCoin) mining. All 
 - Автопереводы в процентах
 - Автоперевод по достижению определенной суммы на балансе
 - Возможность задать цель и узнать примерное время ее достижения
+- Возможность поставить автопрокачку аккаунта до опреденной скорости
 - Автоподключение к серверу после разрыва соединения
 - Возможность майнить для сообщества
 
@@ -98,6 +101,10 @@ docker run -it --rm theunravelghoul/vkcoinpy
 <a name = "config"/>
 
 # Настройка
+
+<a name = "config-token"/>
+
+## Получение токена
 Для работы бота нужен токен ВК. 
 Для получения токена, [перейдите по ссылке](https://vk.cc/9f4IXA), нажмите "Разрешить" и скопируйте часть адресной строки после access_token= и до &expires_in.
 
@@ -119,6 +126,9 @@ docker run -it --rm theunravelghoul/vkcoinpy
 "vk_token": "токен"
 ```
 
+<a name = "config-json"/>
+
+## Настройка config.json
 
 `config.json` может содержать несколько ботов, таким образом, можно
 запускать много ботов в одном окне и получать всю информацию о них.
