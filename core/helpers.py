@@ -9,7 +9,10 @@ def get_pass(e, t):
 
 
 def calculate_pow(p: str) -> int:
-    result = js2py.eval_js(p)
+    context = js2py.EvalJs({
+        'window': '{WebSocket: true, Math: Math, parseInt: parseInt}',
+    })
+    result = context.eval(p)
     return result
 
 
